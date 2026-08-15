@@ -88,7 +88,7 @@ describe("validatePackData", () => {
     expect(result.errors.map((e) => e.code)).toContain("derivation-source-unknown-slot");
   });
 
-  it("rejects a format that references an optional slot without listing it in requires", () => {
+  it("accepts a format referencing an optional (non-derived) slot with no requires, since it always resolves", () => {
     const pack = basePack({
       config: {
         slots: {
@@ -99,8 +99,26 @@ describe("validatePackData", () => {
       },
     });
     const result = validatePackData(pack);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it("rejects a format that references a derived slot without listing it in requires", () => {
+    const pack = basePack({
+      config: {
+        slots: {
+          given: { kind: "lexicon", lexicon: "given" },
+          patronymic: { kind: "derived" },
+        },
+        formats: [{ pattern: "{given} {patronymic}" }],
+        derivations: [
+          { id: "d", produces: "patronymic", source: "given", variants: { "*": "{source}ov" } },
+        ],
+      },
+    });
+    const result = validatePackData(pack);
     expect(result.valid).toBe(false);
-    expect(result.errors.map((e) => e.code)).toContain("missing-requires-for-optional-slot");
+    expect(result.errors.map((e) => e.code)).toContain("missing-requires-for-derived-slot");
   });
 
   it("rejects a pack where every format needs a context that might not be there", () => {
