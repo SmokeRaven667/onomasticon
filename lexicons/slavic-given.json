@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "slavic-given",
+  "tags": ["modern", "slavic"],
+  "entries": [
+    { "value": "Ivan", "variants": ["masc"] },
+    { "value": "Pyotr", "variants": ["masc"] },
+    { "value": "Mikhail", "variants": ["masc"] },
+    { "value": "Yelena", "variants": ["fem"] },
+    { "value": "Irina", "variants": ["fem"] },
+    { "value": "Natasha", "variants": ["fem"] }
+  ]
+}

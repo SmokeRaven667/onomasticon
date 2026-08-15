@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://onomasticon.dev/schema/pack.schema.json",
+  "title": "Onomasticon Genre Pack",
+  "description": "A genre pack declares how names get generated for a slice of the naming space (a culture, a setting, a sub-genre). Genre is data, not code: adding a new one is authoring a pack file, not writing a strategy.",
+  "type": "object",
+  "required": ["schemaVersion", "id", "strategy"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "description": "Bump only on breaking changes to this schema; lets the loader reject or migrate packs it can't read."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$",
+      "description": "Dotted namespace, e.g. 'highfantasy.elven'. Must be unique across all loaded packs."
+    },
+    "label": { "type": "string", "description": "Human-readable name shown in the picker UI." },
+    "description": { "type": "string" },
+    "author": { "type": "string" },
+    "packVersion": {
+      "type": "string",
+      "description": "The pack content's own version (semver-ish), independent of schemaVersion. Bump when entries/formats change."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form facets for filtering in the UI, e.g. ['fantasy','elven']. Not used in matching logic."
+    },
+    "strategy": {
+      "type": "string",
+      "description": "Which generation strategy this pack's config targets. 'template' ships in v1; third-party strategies register their own id and config shape via the strategy registry."
+    },
+    "lexiconRefs": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Maps a short local name (used by slots) to a lexicon id to load, e.g. { \"given\": \"elven-given\" }. The indirection lets a pack swap or share lexicons without editing every slot."
+    },
+    "config": {
+      "description": "Strategy-specific payload. Shape depends on 'strategy' (see allOf below for 'template')."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "strategy": { "const": "template" } },
+        "required": ["strategy"]
+      },
+      "then": {
+        "required": ["config"],
+        "properties": { "config": { "$ref": "#/$defs/templateConfig" } }
+      }
+    }
+  ],
+  "$defs": {
+    "templateConfig": {
+      "type": "object",
+      "required": ["slots", "formats"],
+      "additionalProperties": false,
+      "properties": {
+        "slots": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/slot" },
+          "description": "Keyed by slot name; referenced from format patterns as {slotName} and from derivations as 'produces'/'source'."
+        },
+        "formats": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/format" }
+        },
+        "derivations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/derivation" },
+          "description": "Rules that compute a slot's value from a parent result's part instead of sampling a lexicon. Used for patronymics, clan-prefix surnames, generational suffixes, etc. Only relevant when generate() is called with a parent/kin context."
+        }
+      }
+    },
+    "slot": {
+      "oneOf": [
+        { "$ref": "#/$defs/lexiconSlot" },
+        { "$ref": "#/$defs/proceduralSlot" },
+        { "$ref": "#/$defs/derivedSlot" }
+      ]
+    },
+    "lexiconSlot": {
+      "type": "object",
+      "required": ["kind", "lexicon"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "lexicon" },
+        "lexicon": { "type": "string", "description": "Key into the pack's lexiconRefs map." },
+        "variants": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Variant keys this slot accepts, e.g. ['masc','fem','neutral']. Open vocabulary — packs may define their own beyond the common three."
+        },
+        "shareWithin": {
+          "type": "string",
+          "description": "When generating multiple results in the same group context (e.g. 'kin'), later calls inherit this slot's value from the first result in the group instead of re-rolling."
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, formats may list this slot in 'requires' and it's valid for it to be absent."
+        }
+      }
+    },
+    "proceduralSlot": {
+      "type": "object",
+      "required": ["kind", "pattern"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "procedural" },
+        "pattern": {
+          "type": "string",
+          "description": "Token pattern for generated (non-lexicon) values, e.g. serials or callsigns. Tokens: {L}/{l} random upper/lowercase letter, {D} random digit 0-9. Any other character passes through literally."
+        },
+        "shareWithin": { "type": "string" },
+        "optional": { "type": "boolean", "default": false }
+      }
+    },
+    "derivedSlot": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "derived" },
+        "shareWithin": { "type": "string" }
+      },
+      "description": "This slot is never sampled directly. It resolves only when a derivation with matching 'produces' fires against a parent context; otherwise it is absent. At least one derivation in this pack's config.derivations should target it (enforced by the pack loader, not this schema)."
+    },
+    "format": {
+      "type": "object",
+      "required": ["pattern"],
+      "additionalProperties": false,
+      "properties": {
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "default": 1,
+          "description": "Relative selection weight among this pack's eligible formats."
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Template combining slot tokens and literal text, e.g. '{given} {family} of Clan {clan}'."
+        },
+        "requires": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Slot names that must have resolved to a non-empty value for this format to be eligible. Use for formats built around optional or derived slots."
+        }
+      }
+    },
+    "derivation": {
+      "type": "object",
+      "required": ["id", "produces", "source", "variants"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "produces": {
+          "type": "string",
+          "description": "Name of the slot in this pack's config.slots that this rule can fill."
+        },
+        "source": {
+          "type": "string",
+          "description": "Name of the slot on the parent result to read the base value from (looked up in parent.parts)."
+        },
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "default": 1,
+          "description": "Relative chance this derivation fires instead of a competing derivation for the same target slot, when a parent context is present."
+        },
+        "strip": {
+          "type": "object",
+          "required": ["pattern"],
+          "additionalProperties": false,
+          "properties": {
+            "pattern": { "type": "string", "description": "Regex (no flags) applied to the source value before templating." },
+            "replace": { "type": "string", "default": "" }
+          }
+        },
+        "variants": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string" },
+          "description": "Maps a requested variant key (or '*' as fallback) to a template string. {source} is replaced with the (optionally stripped) parent value, e.g. { \"masc\": \"{source}ovich\", \"fem\": \"{source}ovna\" }."
+        }
+      }
+    }
+  }
+}

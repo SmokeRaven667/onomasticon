@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "spacer-given",
+  "tags": ["sci-fi"],
+  "entries": [
+    { "value": "Kael", "variants": ["masc", "neutral"] },
+    { "value": "Rhys", "variants": ["masc"] },
+    { "value": "Vesa", "variants": ["fem", "neutral"] },
+    { "value": "Orin", "variants": ["fem"] },
+    { "value": "Tamsin", "variants": ["masc", "fem", "neutral"] }
+  ]
+}

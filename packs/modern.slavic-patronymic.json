@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "modern.slavic-patronymic",
+  "label": "Modern — Slavic (Patronymic)",
+  "description": "Contemporary Slavic-style names. When generated with a parent context, adds a patronymic derived from the father's given name; standalone generation falls back to given + family only. Demonstrates derived slots and derivation rules.",
+  "tags": ["modern", "slavic"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "slavic-given",
+    "family": "slavic-family"
+  },
+  "config": {
+    "slots": {
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem"] },
+      "patronymic": { "kind": "derived" },
+      "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" }
+    },
+    "formats": [
+      { "weight": 3, "pattern": "{given} {patronymic} {family}", "requires": ["patronymic"] },
+      { "weight": 1, "pattern": "{given} {family}" }
+    ],
+    "derivations": [
+      {
+        "id": "patronymic-from-father",
+        "produces": "patronymic",
+        "source": "given",
+        "weight": 1,
+        "strip": { "pattern": "[aoeiu]$", "replace": "" },
+        "variants": {
+          "masc": "{source}ovich",
+          "fem": "{source}ovna",
+          "*": "{source}ov"
+        }
+      }
+    ]
+  }
+}
