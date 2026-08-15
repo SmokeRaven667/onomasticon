@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "spacer-family",
+  "tags": ["sci-fi"],
+  "entries": [
+    { "value": "Ostrenko" },
+    { "value": "Callas" },
+    { "value": "Wren" },
+    { "value": "Idegawa" }
+  ]
+}

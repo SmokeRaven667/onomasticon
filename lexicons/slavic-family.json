@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "slavic-family",
+  "tags": ["modern", "slavic"],
+  "entries": [
+    { "value": "Volkov" },
+    { "value": "Sokolova" },
+    { "value": "Petrov" },
+    { "value": "Morozova" }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "scifi.corporate-spacer",
+  "label": "Sci-Fi — Corporate Spacer",
+  "description": "Names for corporate/spacer-culture characters, with an optional procedurally generated registry designation. Demonstrates the procedural slot kind.",
+  "tags": ["sci-fi"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "spacer-given",
+    "family": "spacer-family"
+  },
+  "config": {
+    "slots": {
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem", "neutral"] },
+      "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" },
+      "designation": { "kind": "procedural", "pattern": "{L}{L}-{D}{D}{D}", "optional": true }
+    },
+    "formats": [
+      { "weight": 3, "pattern": "{given} {family}" },
+      { "weight": 1, "pattern": "{given} {family} ({designation})", "requires": ["designation"] }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "highfantasy.elven",
+  "label": "High Fantasy — Elven",
+  "description": "Elven character names for high-fantasy settings, with optional clan affiliation. Demonstrates shareWithin for kin groups.",
+  "tags": ["fantasy", "elven"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "elven-given",
+    "family": "elven-family",
+    "clan": "elven-clan"
+  },
+  "config": {
+    "slots": {
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem", "neutral"] },
+      "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" },
+      "clan": { "kind": "lexicon", "lexicon": "clan", "shareWithin": "kin", "optional": true }
+    },
+    "formats": [
+      { "weight": 3, "pattern": "{given} {family}" },
+      { "weight": 1, "pattern": "{given} {family} of Clan {clan}", "requires": ["clan"] }
+    ]
+  }
+}

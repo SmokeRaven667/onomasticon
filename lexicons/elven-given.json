@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "elven-given",
+  "tags": ["fantasy", "elven"],
+  "entries": [
+    { "value": "Thalvir", "variants": ["masc"] },
+    { "value": "Ondrel", "variants": ["masc"] },
+    { "value": "Caelith", "variants": ["masc"] },
+    { "value": "Elowen", "variants": ["fem"] },
+    { "value": "Sarenith", "variants": ["fem"] },
+    { "value": "Nyleth", "variants": ["fem"] },
+    { "value": "Ashan", "variants": ["masc", "fem", "neutral"] },
+    { "value": "Ilyeth", "variants": ["masc", "fem", "neutral"] }
+  ]
+}
