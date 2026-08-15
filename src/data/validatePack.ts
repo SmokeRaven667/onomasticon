@@ -19,10 +19,17 @@ function extractTokens(pattern: string): string[] {
   return tokens;
 }
 
-/** True if this slot always resolves to a value with no parent/kin context. */
+/**
+ * True if this slot always resolves to a value with no parent/kin context.
+ *
+ * Only `derived` slots are genuinely uncertain: the schema gives lexicon/procedural
+ * slots no probability/chance field, so an `optional` lexicon or procedural slot still
+ * resolves every time it's asked to — "optional" only means a format is allowed to
+ * leave it out of its pattern. Whether it's visible in the rendered name is controlled
+ * by which *format* gets picked (via format weights), not by the slot failing to resolve.
+ */
 function resolvesStandalone(slot: Slot): boolean {
-  if (slot.kind === "derived") return false;
-  return slot.optional !== true;
+  return slot.kind !== "derived";
 }
 
 function checkFormats(slots: Record<string, Slot>, formats: Format[]): ValidationError[] {
@@ -58,8 +65,8 @@ function checkFormats(slots: Record<string, Slot>, formats: Format[]): Validatio
       }
       if (!resolvesStandalone(slot) && !requires.has(name)) {
         errors.push({
-          code: "missing-requires-for-optional-slot",
-          message: `Format ${index} references {${name}}, which may not resolve (derived/optional), but does not list "${name}" in requires.`,
+          code: "missing-requires-for-derived-slot",
+          message: `Format ${index} references {${name}}, a derived slot that may not resolve without a parent context, but does not list "${name}" in requires.`,
           path,
         });
       }
