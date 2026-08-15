@@ -14,7 +14,7 @@ Make Onomasticon usable as infrastructure by other modules, not just a standalon
 
 ## Key decisions
 
-- The `api` object is the *only* supported integration surface. No other module should reach into internal exports — nothing else is guaranteed stable across versions.
+- The `api` object is the _only_ supported integration surface. No other module should reach into internal exports — nothing else is guaranteed stable across versions.
 
 ## Open questions
 

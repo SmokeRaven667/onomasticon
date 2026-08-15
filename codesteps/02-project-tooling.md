@@ -1,6 +1,6 @@
 # Step 02 — Project Tooling & Repo Scaffolding
 
-**Status:** ⏳ Not started
+**Status:** ✅ Done
 **Milestone:** v0.1 — Skeleton
 **Depends on:** [01](01-pack-and-lexicon-schema.md)
 
@@ -19,19 +19,22 @@ Get a buildable, testable, lintable repo in place before writing engine code, so
 - `LICENSE`
 - GitHub Actions CI: lint + test + build on every push/PR
 
-## Key decisions to make here
+## Key decisions
 
-- **JS vs TypeScript.** Recommend TypeScript: the pack schema has enough shape (slot kinds, derivation objects, result objects) that compile-time checking catches the same class of typo the step-01 negative test caught by hand. Foundry types are available via `@league-of-foundry-developers/foundry-vtt-types` (or the newer `fvtt-types`). Decide and record here before step 03.
-- **Bundler.** esbuild for speed and a trivial config, unless a reason emerges to want Vite's dev server (Foundry module dev doesn't get much from HMR against a running world). Default: esbuild.
-- **Test runner.** `vitest` — fast, works with TS out of the box, no Foundry runtime needed since steps 03–06 are pure logic testable in plain Node.
-- **Package manager.** npm unless there's a reason to prefer pnpm/yarn.
+- **TypeScript**, decided over plain JS. The pack schema has enough shape (slot kinds, derivation objects, result objects) that compile-time checking catches the same class of typo the step-01 negative test caught by hand. Foundry types (e.g. `@league-of-foundry-developers/foundry-vtt-types` or `fvtt-types`) are deferred to step 07, when code actually touches the Foundry runtime — no reason to pull them in for pure-logic steps 03–06.
+- **esbuild** as the bundler — fast, trivial config (`esbuild.config.mjs`), bundles `src/index.ts` to `dist/onomasticon.js` as ESM. No dev-server needed since Foundry module dev doesn't benefit much from HMR against a running world.
+- **vitest** as the test runner — fast, native TS support, no Foundry runtime required since steps 03–06 are pure logic.
+- **npm** as the package manager.
+- **ESLint (flat config) + typescript-eslint + Prettier**, with `eslint-config-prettier` disabling stylistic rules ESLint would otherwise fight Prettier over.
+- **MIT license.**
+- A placeholder `src/index.ts` (exporting a version constant) plus a matching test exist solely to give the pipeline something real to build/lint/test — actual engine code starts in step 03.
 
 ## Open questions
 
-- None blocking — the choices above are defaults, not commitments; flip them here if they turn out wrong before step 03 starts.
+- None.
 
 ## Definition of done
 
-- [ ] `npm install && npm run build && npm test && npm run lint` all succeed on a clean checkout
-- [ ] CI is green on a trivial no-op PR
-- [ ] Repo has a LICENSE (decide which — MIT is the Foundry-ecosystem norm)
+- [x] `npm install && npm run build && npm test && npm run lint && npm run typecheck && npm run format` all succeed on a clean checkout
+- [ ] CI is green on a trivial no-op PR (workflow added; first real run happens once this lands on `main`)
+- [x] Repo has a LICENSE (MIT)

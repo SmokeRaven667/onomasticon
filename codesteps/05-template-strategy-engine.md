@@ -31,4 +31,4 @@ Implement the `template` strategy: resolve a pack's slots into values and pick a
 ## Definition of done
 
 - [ ] Deterministic generation (fixed seed → fixed output) against all three example packs
-- [ ] `shareWithin` is accepted on slots but has no effect yet (no kin context) — confirmed by a test that asserts *no* sharing happens without a group context
+- [ ] `shareWithin` is accepted on slots but has no effect yet (no kin context) — confirmed by a test that asserts _no_ sharing happens without a group context

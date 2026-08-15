@@ -15,8 +15,8 @@ Make `shareWithin` actually do something: a second `generate()` call in the same
 
 ## Key decisions
 
-- A group is identified by a `groupId`. `GroupContext` stores resolved parts keyed by `shareWithin` value (e.g. `"kin"`), so multiple slots (family *and* clan) can independently share within the same group key.
-- Mixed-pack groups are allowed (e.g. a child generated from a different pack than a parent). Sharing only applies when the *slot name* matches between packs; a slot name absent from the second pack is simply not shared — not an error.
+- A group is identified by a `groupId`. `GroupContext` stores resolved parts keyed by `shareWithin` value (e.g. `"kin"`), so multiple slots (family _and_ clan) can independently share within the same group key.
+- Mixed-pack groups are allowed (e.g. a child generated from a different pack than a parent). Sharing only applies when the _slot name_ matches between packs; a slot name absent from the second pack is simply not shared — not an error.
 
 ## Open questions
 

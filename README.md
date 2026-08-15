@@ -59,9 +59,9 @@ A pack declares its own structure — which slots it has, how they combine into 
   "lexiconRefs": { "given": "elven-given", "family": "elven-family", "clan": "elven-clan" },
   "config": {
     "slots": {
-      "given":  { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem", "neutral"] },
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem", "neutral"] },
       "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" },
-      "clan":   { "kind": "lexicon", "lexicon": "clan", "shareWithin": "kin", "optional": true }
+      "clan": { "kind": "lexicon", "lexicon": "clan", "shareWithin": "kin", "optional": true }
     },
     "formats": [
       { "weight": 3, "pattern": "{given} {family}" },

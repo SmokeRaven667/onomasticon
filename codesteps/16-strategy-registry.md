@@ -24,4 +24,4 @@ Formalize the seam that lets `template` (step 05) coexist with future strategies
 
 ## Definition of done
 
-- [ ] A hand-written no-op test strategy can be registered and selected via `pack.strategy`, proving the seam works *before* Markov (step 18) exists
+- [ ] A hand-written no-op test strategy can be registered and selected via `pack.strategy`, proving the seam works _before_ Markov (step 18) exists

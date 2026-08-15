@@ -14,7 +14,7 @@ Let users and other module authors add packs without touching Onomasticon's sour
 
 ## Key decisions
 
-- User-supplied packs go through the *exact same* step-03 validator as bundled packs. No special-casing, no relaxed rules.
+- User-supplied packs go through the _exact same_ step-03 validator as bundled packs. No special-casing, no relaxed rules.
 
 ## Open questions
 
