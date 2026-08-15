@@ -178,7 +178,10 @@
           "required": ["pattern"],
           "additionalProperties": false,
           "properties": {
-            "pattern": { "type": "string", "description": "Regex (no flags) applied to the source value before templating." },
+            "pattern": {
+              "type": "string",
+              "description": "Regex (no flags) applied to the source value before templating."
+            },
             "replace": { "type": "string", "default": "" }
           }
         },
