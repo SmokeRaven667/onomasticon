@@ -12,7 +12,7 @@ Seeded RNG, one strategy (template), a loader that trusts nothing, a working Fou
 | --- | ---------------------------------------- | ------ | ---------------------------------------------------------------------------------------- |
 | 01  | Pack & lexicon schema                    | ✅     | [codesteps/01-pack-and-lexicon-schema.md](codesteps/01-pack-and-lexicon-schema.md)       |
 | 02  | Project tooling & repo scaffolding       | ✅     | [codesteps/02-project-tooling.md](codesteps/02-project-tooling.md)                       |
-| 03  | Pack/lexicon loader + semantic validator | ⏳     | [codesteps/03-loader-and-validator.md](codesteps/03-loader-and-validator.md)             |
+| 03  | Pack/lexicon loader + semantic validator | ✅     | [codesteps/03-loader-and-validator.md](codesteps/03-loader-and-validator.md)             |
 | 04  | Seeded RNG                               | ⏳     | [codesteps/04-seeded-rng.md](codesteps/04-seeded-rng.md)                                 |
 | 05  | Template strategy engine                 | ⏳     | [codesteps/05-template-strategy-engine.md](codesteps/05-template-strategy-engine.md)     |
 | 06  | Result object & public `generate()`      | ⏳     | [codesteps/06-result-object-and-generate.md](codesteps/06-result-object-and-generate.md) |
