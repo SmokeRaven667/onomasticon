@@ -24,7 +24,8 @@ export function registerLaunchPoint(): void {
     const button = document.createElement("button");
     button.type = "button";
     button.classList.add("onomasticon-open-generator");
-    button.innerHTML = '<i class="fa-solid fa-signature"></i> Onomasticon';
+    // Safe: renderJournalDirectory fires long after Foundry's "i18nInit" hook.
+    button.innerHTML = `<i class="fa-solid fa-signature"></i> ${game.i18n!.localize("ONOMASTICON.LaunchButton")}`;
     button.addEventListener("click", () => openGenerator());
 
     container.append(button);

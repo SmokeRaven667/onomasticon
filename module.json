@@ -10,6 +10,7 @@
   "authors": [{ "name": "SmokeRaven667", "url": "https://github.com/SmokeRaven667" }],
   "esmodules": ["dist/onomasticon.js"],
   "styles": ["styles/onomasticon.css"],
+  "languages": [{ "lang": "en", "name": "English", "path": "lang/en.json" }],
   "url": "https://github.com/SmokeRaven667/onomasticon",
   "manifest": "https://raw.githubusercontent.com/SmokeRaven667/onomasticon/main/module.json",
   "bugs": "https://github.com/SmokeRaven667/onomasticon/issues",
