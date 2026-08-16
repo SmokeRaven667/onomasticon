@@ -33,7 +33,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static override DEFAULT_OPTIONS = {
     id: "onomasticon-generator",
     window: {
-      title: "Onomasticon — Name Generator",
+      title: "ONOMASTICON.GeneratorApp.Title",
       icon: "fa-solid fa-signature",
       resizable: true,
     },
@@ -117,8 +117,11 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const result = generateWithRegistry(packId, { variant }, this.#registry);
       this.#results.unshift(result);
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      // Safe: this handler only runs from a user click on an already-rendered dialog, long
+      // after Foundry's "i18nInit" hook has fired.
       ui.notifications?.error(
-        `Onomasticon: ${error instanceof Error ? error.message : String(error)}`,
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ErrorNotification", { error: message }),
       );
     }
 
@@ -133,6 +136,10 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const full = target.dataset.full;
     if (!full) return;
     await game.clipboard?.copyPlainText(full);
-    ui.notifications?.info(`Onomasticon: copied "${full}"`);
+    // Safe: this handler only runs from a user click on an already-rendered dialog, long after
+    // Foundry's "i18nInit" hook has fired.
+    ui.notifications?.info(
+      game.i18n!.format("ONOMASTICON.GeneratorApp.CopyNotification", { name: full }),
+    );
   }
 }

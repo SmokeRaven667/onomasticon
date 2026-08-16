@@ -1,0 +1,15 @@
+{
+  "ONOMASTICON": {
+    "LaunchButton": "Onomasticon",
+    "GeneratorApp": {
+      "Title": "Onomasticon — Name Generator",
+      "PackLabel": "Pack",
+      "VariantLabel": "Variant",
+      "VariantPlaceholder": "masc, fem, neutral...",
+      "Generate": "Generate",
+      "CopyTitle": "Copy to clipboard",
+      "CopyNotification": "Onomasticon: copied \"{name}\"",
+      "ErrorNotification": "Onomasticon: {error}"
+    }
+  }
+}

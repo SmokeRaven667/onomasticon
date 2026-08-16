@@ -75,10 +75,25 @@ interface ModuleStub {
 
 const modules = new Map<string, ModuleStub>([["onomasticon", { id: "onomasticon" }]]);
 
+/**
+ * Real (not mocked) `localize`/`format` — returns the key/template unresolved (no `lang/en.json`
+ * loaded under plain Node), which is enough for tests that only assert a notification/button
+ * fired, not its exact rendered text. `format` does a naive `{placeholder}` substitution so call
+ * sites can still be tested against a known output if needed.
+ */
+const i18n = {
+  localize: (key: string): string => key,
+  format: (key: string, data: Record<string, unknown> = {}): string =>
+    key.replace(/\{(\w+)\}/g, (match, token: string) =>
+      token in data ? String(data[token]) : match,
+    ),
+};
+
 // @ts-expect-error - fvtt-types declares `game` as an ambient `const`, not a globalThis property.
 globalThis.game = {
   modules,
   clipboard: { copyPlainText: async (_text: string) => {} },
+  i18n,
 };
 
 // @ts-expect-error - fvtt-types declares `ui` as an ambient `const`, not a globalThis property.

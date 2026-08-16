@@ -3,7 +3,7 @@
 {{else}}
   <div class="onomasticon-generator">
     <div class="form-group">
-      <label for="onomasticon-pack">Pack</label>
+      <label for="onomasticon-pack">{{localize "ONOMASTICON.GeneratorApp.PackLabel"}}</label>
       <select id="onomasticon-pack" name="packId">
         {{#each packGroups}}
           <optgroup label="{{tag}}">
@@ -16,19 +16,19 @@
     </div>
 
     <div class="form-group">
-      <label for="onomasticon-variant">Variant</label>
+      <label for="onomasticon-variant">{{localize "ONOMASTICON.GeneratorApp.VariantLabel"}}</label>
       <input
         id="onomasticon-variant"
         type="text"
         name="variant"
-        placeholder="masc, fem, neutral..."
+        placeholder="{{localize 'ONOMASTICON.GeneratorApp.VariantPlaceholder'}}"
         value="{{variant}}"
       />
     </div>
 
     <button type="button" data-action="generate">
       <i class="fa-solid fa-dice"></i>
-      Generate
+      {{localize "ONOMASTICON.GeneratorApp.Generate"}}
     </button>
 
     <ol class="onomasticon-results">
@@ -40,7 +40,7 @@
             type="button"
             data-action="copy"
             data-full="{{this.full}}"
-            title="Copy to clipboard"
+            title="{{localize 'ONOMASTICON.GeneratorApp.CopyTitle'}}"
           >
             <i class="fa-solid fa-copy"></i>
           </button>
