@@ -16,7 +16,7 @@ Seeded RNG, one strategy (template), a loader that trusts nothing, a working Fou
 | 04  | Seeded RNG                               | ✅     | [codesteps/04-seeded-rng.md](codesteps/04-seeded-rng.md)                                 |
 | 05  | Template strategy engine                 | ✅     | [codesteps/05-template-strategy-engine.md](codesteps/05-template-strategy-engine.md)     |
 | 06  | Result object & public `generate()`      | ✅     | [codesteps/06-result-object-and-generate.md](codesteps/06-result-object-and-generate.md) |
-| 07  | Foundry module bootstrap                 | ⏳     | [codesteps/07-foundry-module-bootstrap.md](codesteps/07-foundry-module-bootstrap.md)     |
+| 07  | Foundry module bootstrap                 | 🔄     | [codesteps/07-foundry-module-bootstrap.md](codesteps/07-foundry-module-bootstrap.md)     |
 | 08  | ApplicationV2 generator UI               | ⏳     | [codesteps/08-applicationv2-generator-ui.md](codesteps/08-applicationv2-generator-ui.md) |
 | 09  | Localization scaffold                    | ⏳     | [codesteps/09-localization-scaffold.md](codesteps/09-localization-scaffold.md)           |
 | 10  | Starter pack content pass                | ⏳     | [codesteps/10-starter-pack-content-pass.md](codesteps/10-starter-pack-content-pass.md)   |

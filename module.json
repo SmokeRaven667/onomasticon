@@ -1,0 +1,18 @@
+{
+  "id": "onomasticon",
+  "title": "Onomasticon",
+  "description": "Generate character, NPC, and kin-group names across fantasy, sci-fi, modern, and custom genre packs.",
+  "version": "0.0.1",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14"
+  },
+  "authors": [{ "name": "SmokeRaven667", "url": "https://github.com/SmokeRaven667" }],
+  "esmodules": ["dist/onomasticon.js"],
+  "url": "https://github.com/SmokeRaven667/onomasticon",
+  "manifest": "https://raw.githubusercontent.com/SmokeRaven667/onomasticon/main/module.json",
+  "bugs": "https://github.com/SmokeRaven667/onomasticon/issues",
+  "readme": "https://github.com/SmokeRaven667/onomasticon#readme",
+  "license": "LICENSE",
+  "socket": false
+}

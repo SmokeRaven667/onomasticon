@@ -23,6 +23,7 @@
     "esbuild": "^0.28.2",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
+    "fvtt-types": "^14.366.0-beta.20260815223659",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
