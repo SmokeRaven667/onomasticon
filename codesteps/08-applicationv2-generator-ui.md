@@ -1,6 +1,6 @@
 # Step 08 — ApplicationV2 Generator UI
 
-**Status:** 🔄 In progress — code complete, awaiting manual in-Foundry verification
+**Status:** ✅ Done — manually verified in the user's local Foundry v14 install
 **Milestone:** v0.1 — Skeleton
 **Depends on:** [07](07-foundry-module-bootstrap.md)
 
@@ -37,5 +37,6 @@ Give the engine a face: pick a pack, pick a variant, generate, copy the result. 
 ## Definition of done
 
 - [x] `npm run typecheck && npm run lint && npm test && npm run build && npm run format` all pass (70 tests); build output confirmed free of `node:fs`/`node:path`/`node:url` by inspecting `dist/onomasticon.js` directly
-- [ ] Opening Foundry, clicking the launch point, picking each of the three example packs, and generating produces a visible name for all three — **pending manual verification**, module copied to the user's `Data/modules/onomasticon` for their own testing
-- [ ] Copy-to-clipboard verified manually — pending
+- [x] Opening Foundry, clicking the launch point, picking each of the three example packs, and generating produces a visible name for all three — confirmed by the user
+- [x] Copy-to-clipboard verified manually — confirmed by the user
+- [x] Pack/variant selection persists across Generate clicks, results list scrolls instead of growing unbounded, and each result shows a stable sequential number — all confirmed by the user after three rounds of manual-testing fixes
