@@ -1,6 +1,6 @@
 import type { Registry } from "./data/types.js";
 import { mulberry32, randomSeed } from "./rng/mulberry32.js";
-import { generateWithTemplate, TEMPLATE_STRATEGY_ID } from "./strategies/template/index.js";
+import { getStrategy } from "./strategies/registry.js";
 import type { GenerateOptions, Result } from "./types.js";
 
 /**
@@ -20,16 +20,17 @@ export function generateWithRegistry(
     throw new Error(`generate: no pack registered with id "${packId}"`);
   }
 
-  if (pack.strategy !== TEMPLATE_STRATEGY_ID) {
+  const strategy = getStrategy(pack.strategy);
+  if (!strategy) {
     throw new Error(
-      `generate: pack "${packId}" uses strategy "${pack.strategy}", which has no registered implementation until step 16's strategy registry exists`,
+      `generate: pack "${packId}" uses strategy "${pack.strategy}", which has no registered implementation (register one via the public API's registerStrategy)`,
     );
   }
 
   const seed = options.seed ?? randomSeed();
   const rng = mulberry32(seed);
 
-  const { full, parts } = generateWithTemplate({
+  const { full, parts } = strategy({
     pack,
     lexicons: registry.lexicons,
     variant: options.variant,
@@ -43,7 +44,7 @@ export function generateWithRegistry(
     parts,
     meta: {
       packId,
-      strategyId: TEMPLATE_STRATEGY_ID,
+      strategyId: pack.strategy,
       seed,
       groupId: options.context?.groupId,
     },
