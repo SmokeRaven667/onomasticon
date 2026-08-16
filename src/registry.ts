@@ -1,22 +1,18 @@
 import { fileURLToPath } from "node:url";
 import { loadAllLexicons } from "./data/loadLexicon.js";
 import { loadAllPacks } from "./data/loadPack.js";
-import type { Lexicon, Pack } from "./data/types.js";
+import type { Lexicon, Pack, Registry } from "./data/types.js";
 
 const PACKS_DIR = fileURLToPath(new URL("../packs", import.meta.url));
 const LEXICONS_DIR = fileURLToPath(new URL("../lexicons", import.meta.url));
-
-export interface Registry {
-  packs: ReadonlyMap<string, Pack>;
-  lexicons: ReadonlyMap<string, Lexicon>;
-}
 
 let cached: Registry | undefined;
 
 /**
  * Loads and validates every bundled pack/lexicon (from the repo's `packs/`/`lexicons/`
  * directories) once, then serves that cached registry. Node-only (built on step 03's
- * `fs`-based loader) — a Foundry/browser-usable registry is step 07's job, not this one.
+ * `fs`-based loader) — `browser/loadBundledRegistry.ts` is the fetch-based equivalent
+ * used inside Foundry.
  *
  * Throws on any invalid bundled file: the repo's own content should always be valid
  * (it's covered by tests), so hitting this means a real bug, not a runtime condition

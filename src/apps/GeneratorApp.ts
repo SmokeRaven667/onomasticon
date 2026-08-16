@@ -1,0 +1,105 @@
+import { generateWithRegistry } from "../generateWithRegistry.js";
+import { loadBundledRegistry } from "../browser/loadBundledRegistry.js";
+import { MODULE_ID } from "../module/constants.js";
+import type { Registry } from "../data/types.js";
+import type { Result } from "../types.js";
+
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+interface PackOption {
+  id: string;
+  label: string;
+}
+
+interface PackGroup {
+  tag: string;
+  packs: PackOption[];
+}
+
+interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.RenderContext {
+  packGroups: PackGroup[];
+  results: Result[];
+  error?: string;
+}
+
+export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  static override DEFAULT_OPTIONS = {
+    id: "onomasticon-generator",
+    window: {
+      title: "Onomasticon — Name Generator",
+      icon: "fa-solid fa-signature",
+      resizable: true,
+    },
+    position: { width: 480, height: "auto" as const },
+    actions: {
+      generate: GeneratorApp.#onGenerate,
+      copy: GeneratorApp.#onCopy,
+    },
+  };
+
+  static override PARTS = {
+    body: { template: `modules/${MODULE_ID}/templates/generator.hbs` },
+  };
+
+  #registry: Registry | undefined;
+  #results: Result[] = [];
+  #error: string | undefined;
+
+  protected override async _prepareContext(): Promise<GeneratorAppContext> {
+    try {
+      this.#registry ??= await loadBundledRegistry({ baseUrl: `modules/${MODULE_ID}/` });
+      this.#error = undefined;
+    } catch (error) {
+      this.#error = error instanceof Error ? error.message : String(error);
+      return { packGroups: [], results: this.#results, error: this.#error };
+    }
+
+    const groups = new Map<string, PackOption[]>();
+    for (const pack of this.#registry.packs.values()) {
+      const tag = pack.tags?.[0] ?? "other";
+      const options = groups.get(tag) ?? [];
+      options.push({ id: pack.id, label: pack.label ?? pack.id });
+      groups.set(tag, options);
+    }
+
+    return {
+      packGroups: [...groups.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([tag, packs]) => ({ tag, packs })),
+      results: this.#results,
+    };
+  }
+
+  static async #onGenerate(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    if (!this.#registry) return;
+
+    const packSelect = this.element.querySelector<HTMLSelectElement>('select[name="packId"]');
+    const variantInput = this.element.querySelector<HTMLInputElement>('input[name="variant"]');
+
+    const packId = packSelect?.value;
+    if (!packId) return;
+    const variant = variantInput?.value.trim() || undefined;
+
+    try {
+      const result = generateWithRegistry(packId, { variant }, this.#registry);
+      this.#results.unshift(result);
+    } catch (error) {
+      ui.notifications?.error(
+        `Onomasticon: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+
+    await this.render();
+  }
+
+  static async #onCopy(
+    this: GeneratorApp,
+    _event: PointerEvent,
+    target: HTMLElement,
+  ): Promise<void> {
+    const full = target.dataset.full;
+    if (!full) return;
+    await game.clipboard?.copyPlainText(full);
+    ui.notifications?.info(`Onomasticon: copied "${full}"`);
+  }
+}

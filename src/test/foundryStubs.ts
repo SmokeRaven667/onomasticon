@@ -39,3 +39,49 @@ class HooksStub {
 
 // @ts-expect-error - fvtt-types declares Hooks as an ambient `const`, not a globalThis property.
 globalThis.Hooks = new HooksStub() as unknown as typeof Hooks;
+
+/**
+ * Minimal stand-ins for `foundry.applications.api.{ApplicationV2,HandlebarsApplicationMixin}` —
+ * just enough that `class Foo extends HandlebarsApplicationMixin(ApplicationV2) {}` can be
+ * defined (and imported) without crashing. Real rendering behavior isn't emulated; UI classes
+ * built on these are verified manually in an actual Foundry instance, not unit-tested here.
+ */
+class ApplicationV2Stub {
+  static DEFAULT_OPTIONS: Record<string, unknown> = {};
+  static PARTS: Record<string, unknown> = {};
+
+  render(..._args: unknown[]): this {
+    return this;
+  }
+}
+
+function handlebarsApplicationMixinStub<T extends new (...args: unknown[]) => object>(Base: T): T {
+  return Base;
+}
+
+globalThis.foundry = {
+  applications: {
+    api: {
+      ApplicationV2: ApplicationV2Stub,
+      HandlebarsApplicationMixin: handlebarsApplicationMixinStub,
+    },
+  },
+} as unknown as typeof foundry;
+
+interface ModuleStub {
+  id: string;
+  api?: unknown;
+}
+
+const modules = new Map<string, ModuleStub>([["onomasticon", { id: "onomasticon" }]]);
+
+// @ts-expect-error - fvtt-types declares `game` as an ambient `const`, not a globalThis property.
+globalThis.game = {
+  modules,
+  clipboard: { copyPlainText: async (_text: string) => {} },
+};
+
+// @ts-expect-error - fvtt-types declares `ui` as an ambient `const`, not a globalThis property.
+globalThis.ui = {
+  notifications: { info: () => {}, warn: () => {}, error: () => {} },
+};

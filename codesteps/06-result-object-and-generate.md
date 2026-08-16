@@ -12,7 +12,7 @@ Wrap the strategy engine in the single function everything else — UI, API, hoo
 
 - `src/generate.ts` — exports `generate(packId, options) -> Result`
 - `src/types.ts` — `Result`, `ResultMeta`, `GenerateOptions`, `GenerateContext`
-- `src/registry.ts` — `loadRegistry()`/`resetRegistryCache()`, not originally listed but needed: `generate()` takes a `packId` string, so something has to resolve that id to an actual `Pack` + its lexicons. Node-only (built on step 03's `fs`-based loader), lazily loads and caches every bundled pack/lexicon on first use. A Foundry/browser-usable registry (fetch-based, not `fs`-based) is step 07's job — `src/index.ts` deliberately does **not** import `generate.ts`/`registry.ts` yet, so the browser bundle stays free of `node:fs`.
+- `src/registry.ts` — `loadRegistry()`/`resetRegistryCache()`, not originally listed but needed: `generate()` takes a `packId` string, so something has to resolve that id to an actual `Pack` + its lexicons. Node-only (built on step 03's `fs`-based loader), lazily loads and caches every bundled pack/lexicon on first use. A Foundry/browser-usable registry (fetch-based, not `fs`-based) turned out not to be step 07's job after all — step 07 was just the init hook. It landed in step 08 instead (`browser/loadBundledRegistry.ts`), once the UI actually needed it; see that codestep for the full story, including a build-breaking `node:fs` leak this same seam caused and how it was fixed (`generateWithRegistry` extracted into its own zero-Node-imports file).
 
 ## Key decisions
 

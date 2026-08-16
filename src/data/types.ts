@@ -95,3 +95,14 @@ export interface LexiconValidationResult {
   errors: ValidationError[];
   lexicon?: Lexicon;
 }
+
+/**
+ * A resolved set of packs and lexicons, keyed by id, ready for generation. How it gets
+ * populated differs by environment: `registry.ts` (Node, `fs`-based) vs.
+ * `browser/loadBundledRegistry.ts` (fetch-based, for use inside Foundry) — both produce
+ * this same shape so `generateWithRegistry()` doesn't care which one it was given.
+ */
+export interface Registry {
+  packs: ReadonlyMap<string, Pack>;
+  lexicons: ReadonlyMap<string, Lexicon>;
+}
