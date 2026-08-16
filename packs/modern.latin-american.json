@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "modern.latin-american",
+  "label": "Modern — Latin American",
+  "description": "Contemporary Latin American names, compiled from common public personal names and surnames.",
+  "tags": ["modern", "latin-american"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "latin-given",
+    "family": "latin-family"
+  },
+  "config": {
+    "slots": {
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem"] },
+      "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" }
+    },
+    "formats": [{ "weight": 1, "pattern": "{given} {family}" }]
+  }
+}
