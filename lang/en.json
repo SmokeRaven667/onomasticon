@@ -9,7 +9,14 @@
       "Generate": "Generate",
       "CopyTitle": "Copy to clipboard",
       "CopyNotification": "Onomasticon: copied \"{name}\"",
-      "ErrorNotification": "Onomasticon: {error}"
+      "ErrorNotification": "Onomasticon: {error}",
+      "DeleteTitle": "Delete this result",
+      "ClearAll": "Clear All",
+      "KinCountLabel": "Family size",
+      "KinSetCountTitle": "Set up this many variant rows before generating the family",
+      "KinSetCount": "Set Rows",
+      "KinMemberLabel": "Member {number} variant",
+      "KinGenerate": "Generate Family"
     }
   }
 }

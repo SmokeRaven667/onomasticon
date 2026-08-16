@@ -4,6 +4,10 @@
   gap: 0.5rem;
 }
 
+.onomasticon-clear-all {
+  align-self: flex-end;
+}
+
 .onomasticon-results {
   margin: 0;
   padding: 0;

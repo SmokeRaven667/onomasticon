@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generate } from "./generate.js";
+import { generate, generateKin } from "./generate.js";
 import { loadRegistry } from "./registry.js";
 
 describe("generate", () => {
@@ -68,5 +68,26 @@ describe("generate", () => {
       expect(result.full.length, packId).toBeGreaterThan(0);
       expect(result.meta.packId, packId).toBe(packId);
     }
+  });
+});
+
+describe("generateKin", () => {
+  it("generates a family of 4 from modern.slavic-patronymic with a consistent surname and correct per-child patronymics", () => {
+    const results = generateKin("modern.slavic-patronymic", 4, {
+      members: [
+        { variant: "masc", seed: 1 },
+        { variant: "masc", seed: 2 },
+        { variant: "fem", seed: 3 },
+        { variant: "fem", seed: 4 },
+      ],
+    });
+
+    expect(results).toHaveLength(4);
+    expect(new Set(results.map((r) => r.parts.family)).size).toBe(1);
+
+    const strippedFatherGiven = results[0]!.parts.given!.replace(/[aoeiu]$/, "");
+    expect(results[1]!.parts.patronymic).toBe(`${strippedFatherGiven}ovich`);
+    expect(results[2]!.parts.patronymic).toBe(`${strippedFatherGiven}ovna`);
+    expect(results[3]!.parts.patronymic).toBe(`${strippedFatherGiven}ovna`);
   });
 });

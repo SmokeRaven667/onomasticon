@@ -31,6 +31,57 @@
       {{localize "ONOMASTICON.GeneratorApp.Generate"}}
     </button>
 
+    <hr />
+
+    <div class="form-group onomasticon-kin-count">
+      <label for="onomasticon-kin-count">{{localize
+          "ONOMASTICON.GeneratorApp.KinCountLabel"
+        }}</label>
+      <input
+        id="onomasticon-kin-count"
+        type="number"
+        name="kinCount"
+        min="1"
+        value="{{kinCount}}"
+      />
+      <button
+        type="button"
+        data-action="setKinRows"
+        title="{{localize 'ONOMASTICON.GeneratorApp.KinSetCountTitle'}}"
+      >
+        {{localize "ONOMASTICON.GeneratorApp.KinSetCount"}}
+      </button>
+    </div>
+
+    <div class="onomasticon-kin-rows">
+      {{#each kinRows}}
+        <div class="form-group">
+          <label for="onomasticon-kin-variant-{{this.index}}">
+            {{localize "ONOMASTICON.GeneratorApp.KinMemberLabel" number=this.index}}
+          </label>
+          <input
+            id="onomasticon-kin-variant-{{this.index}}"
+            type="text"
+            class="onomasticon-kin-variant"
+            placeholder="{{localize 'ONOMASTICON.GeneratorApp.VariantPlaceholder'}}"
+            value="{{this.variant}}"
+          />
+        </div>
+      {{/each}}
+    </div>
+
+    <button type="button" data-action="generateKin">
+      <i class="fa-solid fa-people-group"></i>
+      {{localize "ONOMASTICON.GeneratorApp.KinGenerate"}}
+    </button>
+
+    {{#if showClearAll}}
+      <button type="button" class="onomasticon-clear-all" data-action="clearResults">
+        <i class="fa-solid fa-trash"></i>
+        {{localize "ONOMASTICON.GeneratorApp.ClearAll"}}
+      </button>
+    {{/if}}
+
     <ol class="onomasticon-results">
       {{#each results}}
         <li>
@@ -43,6 +94,14 @@
             title="{{localize 'ONOMASTICON.GeneratorApp.CopyTitle'}}"
           >
             <i class="fa-solid fa-copy"></i>
+          </button>
+          <button
+            type="button"
+            data-action="deleteResult"
+            data-index="{{this.index}}"
+            title="{{localize 'ONOMASTICON.GeneratorApp.DeleteTitle'}}"
+          >
+            <i class="fa-solid fa-trash"></i>
           </button>
         </li>
       {{/each}}
