@@ -38,7 +38,7 @@ Now other people can extend this without touching the source.
 | #   | Step                                      | Status | File                                                                       |
 | --- | ----------------------------------------- | ------ | -------------------------------------------------------------------------- |
 | 14  | Public API surface                        | ✅     | [codesteps/14-public-api-surface.md](codesteps/14-public-api-surface.md)   |
-| 15  | Hooks (`preGenerate` / `generated`)       | ⏳     | [codesteps/15-hooks.md](codesteps/15-hooks.md)                             |
+| 15  | Hooks (`preGenerate` / `generated`)       | ✅     | [codesteps/15-hooks.md](codesteps/15-hooks.md)                             |
 | 16  | Strategy registry                         | ✅     | [codesteps/16-strategy-registry.md](codesteps/16-strategy-registry.md)     |
 | 17  | User pack directory / custom pack loading | ⏳     | [codesteps/17-user-pack-directory.md](codesteps/17-user-pack-directory.md) |
 
