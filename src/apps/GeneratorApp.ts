@@ -17,10 +17,15 @@ interface PackGroup {
   packs: PackOption[];
 }
 
+interface ResultEntry {
+  index: number;
+  full: string;
+}
+
 interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.RenderContext {
   packGroups: PackGroup[];
   variant: string;
-  results: Result[];
+  results: ResultEntry[];
   error?: string;
 }
 
@@ -55,7 +60,12 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       this.#error = undefined;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
-      return { packGroups: [], variant: this.#variant, results: this.#results, error: this.#error };
+      return {
+        packGroups: [],
+        variant: this.#variant,
+        results: this.#resultEntries(),
+        error: this.#error,
+      };
     }
 
     const groups = new Map<string, PackOption[]>();
@@ -75,8 +85,19 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([tag, packs]) => ({ tag, packs })),
       variant: this.#variant,
-      results: this.#results,
+      results: this.#resultEntries(),
     };
+  }
+
+  /**
+   * 1-based, newest-first (matching insertion order) so two people looking at the same
+   * rendered list can point at "#3" and mean the same result. Computed here rather than
+   * relying on the browser's native `<ol>` counter, since Foundry's own base styles reset
+   * `list-style` on lists inside its window chrome with higher CSS specificity than a
+   * module stylesheet can cleanly override.
+   */
+  #resultEntries(): ResultEntry[] {
+    return this.#results.map((result, i) => ({ index: i + 1, full: result.full }));
   }
 
   static async #onGenerate(this: GeneratorApp, _event: PointerEvent): Promise<void> {
