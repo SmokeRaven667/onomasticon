@@ -6,8 +6,8 @@
 
 .onomasticon-results {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  padding-left: 1.5rem;
+  list-style: decimal;
   max-height: 240px;
   overflow-y: auto;
 }
