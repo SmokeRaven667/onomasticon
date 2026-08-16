@@ -1,4 +1,5 @@
 import type { Lexicon, Pack } from "../../data/types.js";
+import { GroupContext } from "../../kin/GroupContext.js";
 import type { RNG } from "../../rng/mulberry32.js";
 import { renderPattern } from "./renderPattern.js";
 import { resolveSlot } from "./resolveSlot.js";
@@ -7,9 +8,9 @@ import { selectFormat } from "./selectFormat.js";
 export const TEMPLATE_STRATEGY_ID = "template";
 
 /**
- * Parent/kin context for derivations. Accepted now so the signature doesn't change shape
- * when step 11 (kin group context) and step 12 (derivation engine) wire it up — until then
- * it's accepted and ignored, and `derived` slots always resolve to `undefined`.
+ * Parent/kin context for derivations. `parent` is accepted now so the signature doesn't
+ * change shape when step 12 (derivation engine) wires it up — until then it's accepted and
+ * ignored, and `derived` slots always resolve to `undefined`.
  */
 export interface TemplateContext {
   parent?: Readonly<Record<string, string>>;
@@ -21,6 +22,10 @@ export interface GenerateWithTemplateInput {
   variant?: string;
   rng: RNG;
   context?: TemplateContext;
+  /** Kin group this call belongs to — see resolveSlot.ts for how this activates `shareWithin`. */
+  groupId?: string;
+  /** Defaults to resolveSlot's process-wide singleton; inject your own for test isolation. */
+  groupContext?: GroupContext;
 }
 
 export interface GenerateWithTemplateResult {
@@ -29,7 +34,7 @@ export interface GenerateWithTemplateResult {
 }
 
 export function generateWithTemplate(input: GenerateWithTemplateInput): GenerateWithTemplateResult {
-  const { pack, lexicons, variant, rng } = input;
+  const { pack, lexicons, variant, rng, groupId, groupContext } = input;
 
   if (pack.strategy !== TEMPLATE_STRATEGY_ID || !pack.config) {
     throw new Error(
@@ -42,7 +47,14 @@ export function generateWithTemplate(input: GenerateWithTemplateInput): Generate
 
   const parts: Record<string, string> = {};
   for (const [name, slot] of Object.entries(slots)) {
-    const value = resolveSlot(name, slot, { variant, lexicons, lexiconRefs, rng });
+    const value = resolveSlot(name, slot, {
+      variant,
+      lexicons,
+      lexiconRefs,
+      rng,
+      groupId,
+      groupContext,
+    });
     if (value !== undefined) parts[name] = value;
   }
 
