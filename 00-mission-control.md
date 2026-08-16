@@ -28,7 +28,7 @@ The real design driver. If v0.1's foundation is right, this is additive.
 | #   | Step                              | Status | File                                                                                 |
 | --- | --------------------------------- | ------ | ------------------------------------------------------------------------------------ |
 | 11  | Kin group context & `shareWithin` | ✅     | [codesteps/11-kin-group-context.md](codesteps/11-kin-group-context.md)               |
-| 12  | Derivation engine                 | ⏳     | [codesteps/12-derivation-engine.md](codesteps/12-derivation-engine.md)               |
+| 12  | Derivation engine                 | ✅     | [codesteps/12-derivation-engine.md](codesteps/12-derivation-engine.md)               |
 | 13  | "Generate a family of N" workflow | ⏳     | [codesteps/13-generate-family-workflow.md](codesteps/13-generate-family-workflow.md) |
 
 ## Milestone: v0.3 — Extension points

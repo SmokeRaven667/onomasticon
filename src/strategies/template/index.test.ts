@@ -56,6 +56,20 @@ describe("generateWithTemplate - real example packs", () => {
     }
   });
 
+  it("reproduces the schema's own example: parent given Ivan (masc) + fem child -> patronymic Ivanovna", () => {
+    const pack = loadRealPack("modern.slavic-patronymic.json");
+    for (let seed = 0; seed < 30; seed++) {
+      const result = generateWithTemplate({
+        pack,
+        lexicons,
+        variant: "fem",
+        rng: mulberry32(seed),
+        context: { parent: { given: "Ivan" } },
+      });
+      expect(result.parts.patronymic).toBe("Ivanovna");
+    }
+  });
+
   it("shareWithin has no effect without a group context - independent calls don't share values", () => {
     const pack = loadRealPack("highfantasy.elven.json");
     const families = new Set<string>();

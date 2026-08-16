@@ -1,4 +1,5 @@
-import type { Lexicon, Slot } from "../../data/types.js";
+import type { Derivation, Lexicon, Slot } from "../../data/types.js";
+import { deriveSlot } from "../../kin/deriveSlot.js";
 import { defaultGroupContext, GroupContext } from "../../kin/GroupContext.js";
 import type { RNG } from "../../rng/mulberry32.js";
 import { pickDigit, pickLowerLetter, pickUpperLetter } from "../../rng/pick.js";
@@ -15,6 +16,10 @@ export interface ResolveSlotOptions {
   groupId?: string;
   /** Defaults to the process-wide `defaultGroupContext` singleton; inject your own for test isolation. */
   groupContext?: GroupContext;
+  /** The parent result's resolved parts. Required (alongside the pack's own derivations) for `derived` slots to resolve. */
+  parent?: Readonly<Record<string, string>>;
+  /** This pack's `config.derivations`, searched for entries whose `produces` matches a `derived` slot's name. */
+  derivations?: readonly Derivation[];
 }
 
 function resolveLexiconSlot(name: string, lexiconKey: string, options: ResolveSlotOptions): string {
@@ -54,9 +59,9 @@ function resolveProceduralSlot(pattern: string, rng: RNG): string {
 }
 
 /**
- * Resolves one slot to a value, or `undefined` for a `derived` slot with no parent context
- * to derive from (kin-group derivation is wired up in step 12; this always returns
- * `undefined` for `derived` slots until then).
+ * Resolves one slot to a value, or `undefined` for a `derived` slot that has nothing to
+ * derive from — no `parent` context (a standalone `generate()` call, not part of a kin
+ * group), or `deriveSlot` itself found no candidate that fires (see deriveSlot.ts).
  *
  * `lexicon`/`procedural` slots always resolve, `optional` or not — the schema gives them no
  * chance/probability field, so whether an optional slot's value shows up in the rendered
@@ -64,14 +69,25 @@ function resolveProceduralSlot(pattern: string, rng: RNG): string {
  *
  * A slot with `shareWithin` set only actually shares when a `groupId` is also supplied —
  * with no `groupId` (the common case: a single standalone `generate()` call) it just
- * resolves fresh every time, same as a slot with no `shareWithin` at all.
+ * resolves fresh every time, same as a slot with no `shareWithin` at all. `shareWithin` is
+ * not honored on `derived` slots: `deriveSlot` can legitimately return `undefined`, which
+ * `GroupContext` has nowhere sane to cache, and no bundled pack asks for it yet.
  */
 export function resolveSlot(
   name: string,
   slot: Slot,
   options: ResolveSlotOptions,
 ): string | undefined {
-  if (slot.kind === "derived") return undefined;
+  if (slot.kind === "derived") {
+    if (!options.parent) return undefined;
+    return deriveSlot({
+      produces: name,
+      derivations: options.derivations ?? [],
+      parent: options.parent,
+      variant: options.variant,
+      rng: options.rng,
+    });
+  }
 
   const resolveFresh = (): string =>
     slot.kind === "procedural"

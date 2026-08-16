@@ -194,7 +194,7 @@ describe("resolveSlot - shareWithin", () => {
 });
 
 describe("resolveSlot - derived slots", () => {
-  it("always resolves to undefined (no kin/parent context exists until step 12)", () => {
+  it("resolves to undefined with no parent context", () => {
     const rng = mulberry32(1);
     const value = resolveSlot(
       "patronymic",
@@ -202,5 +202,40 @@ describe("resolveSlot - derived slots", () => {
       { lexicons: new Map(), lexiconRefs: {}, rng },
     );
     expect(value).toBeUndefined();
+  });
+
+  it("resolves to undefined when a parent is given but no derivations target this slot", () => {
+    const rng = mulberry32(1);
+    const value = resolveSlot(
+      "patronymic",
+      { kind: "derived" },
+      { lexicons: new Map(), lexiconRefs: {}, rng, parent: { given: "Ivan" } },
+    );
+    expect(value).toBeUndefined();
+  });
+
+  it("derives a value via deriveSlot when a parent and matching derivation are both present", () => {
+    const rng = mulberry32(1);
+    const value = resolveSlot(
+      "patronymic",
+      { kind: "derived" },
+      {
+        lexicons: new Map(),
+        lexiconRefs: {},
+        rng,
+        parent: { given: "Ivan" },
+        variant: "fem",
+        derivations: [
+          {
+            id: "patronymic-from-father",
+            produces: "patronymic",
+            source: "given",
+            strip: { pattern: "[aoeiu]$", replace: "" },
+            variants: { masc: "{source}ovich", fem: "{source}ovna", "*": "{source}ov" },
+          },
+        ],
+      },
+    );
+    expect(value).toBe("Ivanovna");
   });
 });

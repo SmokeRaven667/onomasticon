@@ -50,6 +50,17 @@ describe("generate", () => {
     expect(givens.size).toBeGreaterThan(1);
   });
 
+  it("derives a patronymic from parent context: given Ivan (masc) + fem child -> Ivanovna", () => {
+    for (let seed = 0; seed < 30; seed++) {
+      const result = generate("modern.slavic-patronymic", {
+        seed,
+        variant: "fem",
+        context: { parent: { given: "Ivan" } },
+      });
+      expect(result.parts.patronymic).toBe("Ivanovna");
+    }
+  });
+
   it("works end-to-end against every bundled pack, callable from plain Node with no Foundry runtime", () => {
     const { packs } = loadRegistry();
     for (const packId of packs.keys()) {
