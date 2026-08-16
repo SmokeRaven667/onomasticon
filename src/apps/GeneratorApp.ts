@@ -1,6 +1,6 @@
 import { generateKinWithRegistry } from "../generateKinWithRegistry.js";
 import { generateWithRegistry } from "../generateWithRegistry.js";
-import { loadBundledRegistry } from "../browser/loadBundledRegistry.js";
+import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import { MODULE_ID } from "../module/constants.js";
 import type { Registry } from "../data/types.js";
 import type { Result } from "../types.js";
@@ -72,7 +72,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   protected override async _prepareContext(): Promise<GeneratorAppContext> {
     try {
-      this.#registry ??= await loadBundledRegistry({ baseUrl: `modules/${MODULE_ID}/` });
+      this.#registry ??= await loadFullRegistry({ baseUrl: `modules/${MODULE_ID}/` });
       this.#error = undefined;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);

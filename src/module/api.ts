@@ -1,4 +1,4 @@
-import { loadBundledRegistry } from "../browser/loadBundledRegistry.js";
+import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import type { Pack } from "../data/types.js";
 import { validatePackData } from "../data/validatePack.js";
 import { generateKinWithRegistry, type GenerateKinOptions } from "../generateKinWithRegistry.js";
@@ -26,7 +26,7 @@ export interface OnomasticonApi {
 }
 
 function loadRegistry() {
-  return loadBundledRegistry({ baseUrl: `modules/${MODULE_ID}/` });
+  return loadFullRegistry({ baseUrl: `modules/${MODULE_ID}/` });
 }
 
 async function generate(packId: string, options: GenerateOptions = {}): Promise<Result> {

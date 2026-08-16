@@ -84,6 +84,28 @@ interface ModuleStub {
 const modules = new Map<string, ModuleStub>([["onomasticon", { id: "onomasticon" }]]);
 
 /**
+ * Real (not mocked) `register`/`get`/`set`, keyed the same way Foundry itself does
+ * ("namespace.key") — `register` seeds the default so `get` behaves correctly for a
+ * setting nothing has explicitly `set` yet, same as real Foundry.
+ */
+const settingsStore = new Map<string, unknown>();
+const settings = {
+  register: (namespace: string, key: string, data: { default?: unknown }): void => {
+    settingsStore.set(`${namespace}.${key}`, data.default);
+  },
+  get: (namespace: string, key: string): unknown => settingsStore.get(`${namespace}.${key}`),
+  set: (namespace: string, key: string, value: unknown): Promise<unknown> => {
+    settingsStore.set(`${namespace}.${key}`, value);
+    return Promise.resolve(value);
+  },
+};
+
+/** Test-only escape hatch: clears every registered/set setting value. */
+export function resetSettingsStub(): void {
+  settingsStore.clear();
+}
+
+/**
  * Real (not mocked) `localize`/`format` — returns the key/template unresolved (no `lang/en.json`
  * loaded under plain Node), which is enough for tests that only assert a notification/button
  * fired, not its exact rendered text. `format` does a naive `{placeholder}` substitution so call
@@ -102,6 +124,7 @@ globalThis.game = {
   modules,
   clipboard: { copyPlainText: async (_text: string) => {} },
   i18n,
+  settings,
 };
 
 // @ts-expect-error - fvtt-types declares `ui` as an ambient `const`, not a globalThis property.
