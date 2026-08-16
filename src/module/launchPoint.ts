@@ -1,8 +1,8 @@
 import { GeneratorApp } from "../apps/GeneratorApp.js";
-import { MODULE_ID } from "./constants.js";
 
 let appInstance: GeneratorApp | undefined;
 
+/** Also exposed as `game.modules.get("onomasticon").api.openGenerator()` — see module/api.ts. */
 export function openGenerator(): GeneratorApp {
   appInstance ??= new GeneratorApp();
   void appInstance.render(true);
@@ -10,10 +10,11 @@ export function openGenerator(): GeneratorApp {
 }
 
 /**
- * Wires up the two ways to reach the generator dialog: a Journal Directory header button
- * (the default launch point per codestep 08 — revisit if it doesn't feel right in practice)
- * and a minimal `game.modules.get("onomasticon").api.openGenerator()` for macros. This `api`
- * is a stepping stone; step 14 formalizes the real public API surface.
+ * Wires up a Journal Directory header button (the default launch point per codestep 08 —
+ * revisit if it doesn't feel right in practice) as one way to reach the generator dialog.
+ * The other way — `game.modules.get("onomasticon").api.openGenerator()` for macros — is
+ * assigned in module/api.ts's own `init` hook, not here, so there's a single writer of
+ * `module.api`.
  */
 export function registerLaunchPoint(): void {
   Hooks.on("renderJournalDirectory", (_app: unknown, html: HTMLElement) => {
@@ -29,12 +30,5 @@ export function registerLaunchPoint(): void {
     button.addEventListener("click", () => openGenerator());
 
     container.append(button);
-  });
-
-  Hooks.once("init", () => {
-    const module = game.modules?.get(MODULE_ID);
-    if (module) {
-      (module as unknown as { api?: unknown }).api = { openGenerator };
-    }
   });
 }
