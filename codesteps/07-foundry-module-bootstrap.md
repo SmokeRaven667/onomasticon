@@ -1,6 +1,6 @@
 # Step 07 — Foundry Module Bootstrap
 
-**Status:** 🔄 In progress — code complete, awaiting manual in-Foundry verification
+**Status:** ✅ Done — manually verified in the user's local Foundry v14 install
 **Milestone:** v0.1 — Skeleton
 **Depends on:** [02](02-project-tooling.md), [06](06-result-object-and-generate.md)
 
@@ -32,5 +32,5 @@ Make Onomasticon an installable, enable-able Foundry module — the first point 
 ## Definition of done
 
 - [x] `npm run typecheck && npm run lint && npm test && npm run build && npm run format` all pass; `init.test.ts` confirms `registerInitHook()` registers exactly one `"init"` hook
-- [ ] Module installs and enables in a local Foundry v14 instance with no console errors — **pending manual verification.** The user has a real, in-use Foundry v14 install with many live campaigns; rather than touch that environment automatically, the built module was copied to `Data/modules/onomasticon` for the user to enable and check themselves in their own time.
-- [ ] `game.modules.get("onomasticon").active === true` — same, pending manual confirmation
+- [x] Module installs and enables in a local Foundry v14 instance with no console errors — confirmed by the user in their real Foundry v14 install
+- [x] `game.modules.get("onomasticon").active === true` — confirmed by the user
