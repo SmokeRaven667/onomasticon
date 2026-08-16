@@ -35,6 +35,14 @@ class HooksStub {
   callAll(hook: string, ...args: unknown[]): void {
     for (const fn of [...(this.handlers.get(hook) ?? [])]) fn(...args);
   }
+
+  /** Unlike callAll, stops (and returns false) at the first listener that returns false. */
+  call(hook: string, ...args: unknown[]): boolean {
+    for (const fn of [...(this.handlers.get(hook) ?? [])]) {
+      if (fn(...args) === false) return false;
+    }
+    return true;
+  }
 }
 
 // @ts-expect-error - fvtt-types declares Hooks as an ambient `const`, not a globalThis property.
