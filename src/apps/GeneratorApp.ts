@@ -35,6 +35,7 @@ interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.Ren
   error?: string;
   kinCount: number;
   kinRows: KinRow[];
+  showClearAll: boolean;
 }
 
 export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -49,6 +50,8 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       generate: GeneratorApp.#onGenerate,
       copy: GeneratorApp.#onCopy,
+      deleteResult: GeneratorApp.#onDeleteResult,
+      clearResults: GeneratorApp.#onClearResults,
       setKinRows: GeneratorApp.#onSetKinRows,
       generateKin: GeneratorApp.#onGenerateKin,
     },
@@ -80,6 +83,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         error: this.#error,
         kinCount: this.#kinCount,
         kinRows: this.#kinRows(),
+        showClearAll: this.#results.length >= 3,
       };
     }
 
@@ -103,11 +107,29 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       results: this.#resultEntries(),
       kinCount: this.#kinCount,
       kinRows: this.#kinRows(),
+      showClearAll: this.#results.length >= 3,
     };
   }
 
   #kinRows(): KinRow[] {
     return this.#kinVariants.map((variant, i) => ({ index: i + 1, variant }));
+  }
+
+  /**
+   * Kin rows are only meaningful relative to whichever pack is selected (a variant typed
+   * for one pack, e.g. "neutral", may not exist on another) — switching packs resets the
+   * family back to one empty row rather than carrying stale rows over. The pack `<select>`
+   * has no `data-action`, so this listener is (re)attached here instead, since the whole
+   * body (including the `<select>` itself) is replaced on every render.
+   */
+  protected override async _onRender(): Promise<void> {
+    const packSelect = this.element.querySelector<HTMLSelectElement>('select[name="packId"]');
+    packSelect?.addEventListener("change", () => {
+      this.#selectedPackId = packSelect.value;
+      this.#kinCount = 1;
+      this.#kinVariants = [""];
+      void this.render();
+    });
   }
 
   /**
@@ -164,8 +186,31 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     );
   }
 
-  /** Resizes the kin-row variant inputs to the requested count, preserving already-typed rows. */
+  /** `data-index` is the same 1-based, newest-first index #resultEntries() renders it with. */
+  static async #onDeleteResult(
+    this: GeneratorApp,
+    _event: PointerEvent,
+    target: HTMLElement,
+  ): Promise<void> {
+    const index = Number(target.dataset.index);
+    if (!Number.isInteger(index) || index < 1 || index > this.#results.length) return;
+    this.#results.splice(index - 1, 1);
+    await this.render();
+  }
+
+  static async #onClearResults(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    this.#results = [];
+    await this.render();
+  }
+
+  /**
+   * Resizes the kin-row variant inputs to the requested count, preserving already-typed rows.
+   * Also re-captures the pack `<select>` and standalone `variant` input, same as #onGenerate —
+   * without this, re-rendering drops both back to their defaults (see step 08's history).
+   */
   static async #onSetKinRows(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    const packSelect = this.element.querySelector<HTMLSelectElement>('select[name="packId"]');
+    const variantInput = this.element.querySelector<HTMLInputElement>('input[name="variant"]');
     const countInput = this.element.querySelector<HTMLInputElement>('input[name="kinCount"]');
     const count = Math.max(1, Math.trunc(Number(countInput?.value)) || 1);
 
@@ -173,6 +218,8 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       ...this.element.querySelectorAll<HTMLInputElement>(".onomasticon-kin-variant"),
     ].map((input) => input.value);
 
+    if (packSelect?.value) this.#selectedPackId = packSelect.value;
+    this.#variant = variantInput?.value ?? this.#variant;
     this.#kinCount = count;
     this.#kinVariants = Array.from({ length: count }, (_, i) => typedVariants[i] ?? "");
 
@@ -183,10 +230,12 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!this.#registry) return;
 
     const packSelect = this.element.querySelector<HTMLSelectElement>('select[name="packId"]');
+    const variantInput = this.element.querySelector<HTMLInputElement>('input[name="variant"]');
     const packId = packSelect?.value;
     if (!packId) return;
 
     this.#selectedPackId = packId;
+    this.#variant = variantInput?.value ?? this.#variant;
     this.#kinVariants = [
       ...this.element.querySelectorAll<HTMLInputElement>(".onomasticon-kin-variant"),
     ].map((input) => input.value);

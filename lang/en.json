@@ -10,6 +10,8 @@
       "CopyTitle": "Copy to clipboard",
       "CopyNotification": "Onomasticon: copied \"{name}\"",
       "ErrorNotification": "Onomasticon: {error}",
+      "DeleteTitle": "Delete this result",
+      "ClearAll": "Clear All",
       "KinCountLabel": "Family size",
       "KinSetCountTitle": "Set up this many variant rows before generating the family",
       "KinSetCount": "Set Rows",

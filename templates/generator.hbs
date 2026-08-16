@@ -75,6 +75,13 @@
       {{localize "ONOMASTICON.GeneratorApp.KinGenerate"}}
     </button>
 
+    {{#if showClearAll}}
+      <button type="button" class="onomasticon-clear-all" data-action="clearResults">
+        <i class="fa-solid fa-trash"></i>
+        {{localize "ONOMASTICON.GeneratorApp.ClearAll"}}
+      </button>
+    {{/if}}
+
     <ol class="onomasticon-results">
       {{#each results}}
         <li>
@@ -87,6 +94,14 @@
             title="{{localize 'ONOMASTICON.GeneratorApp.CopyTitle'}}"
           >
             <i class="fa-solid fa-copy"></i>
+          </button>
+          <button
+            type="button"
+            data-action="deleteResult"
+            data-index="{{this.index}}"
+            title="{{localize 'ONOMASTICON.GeneratorApp.DeleteTitle'}}"
+          >
+            <i class="fa-solid fa-trash"></i>
           </button>
         </li>
       {{/each}}
