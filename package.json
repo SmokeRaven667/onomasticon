@@ -9,7 +9,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "node esbuild.config.mjs",
+    "build": "npm run generate:manifest && node esbuild.config.mjs",
+    "generate:manifest": "node scripts/generateManifest.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
@@ -24,6 +25,7 @@
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
     "fvtt-types": "^14.366.0-beta.20260815223659",
+    "globals": "^17.11.0",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
