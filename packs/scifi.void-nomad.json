@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "scifi.void-nomad",
+  "label": "Sci-Fi — Void Nomad",
+  "description": "Names for drifting spacefarer-clan characters — rougher and more improvised-sounding than the corporate-spacer pack's polished, synthetic names.",
+  "tags": ["sci-fi", "nomad"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "nomad-given",
+    "family": "nomad-family"
+  },
+  "config": {
+    "slots": {
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem", "neutral"] },
+      "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" }
+    },
+    "formats": [{ "weight": 1, "pattern": "{given} {family}" }]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "highfantasy.dwarven",
+  "label": "High Fantasy — Dwarven",
+  "description": "Dwarven character names for high-fantasy settings, in the harsh-consonant, hold-and-forge naming style common to the archetype.",
+  "tags": ["fantasy", "dwarven"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "dwarven-given",
+    "family": "dwarven-family"
+  },
+  "config": {
+    "slots": {
+      "given": { "kind": "lexicon", "lexicon": "given", "variants": ["masc", "fem", "neutral"] },
+      "family": { "kind": "lexicon", "lexicon": "family", "shareWithin": "kin" }
+    },
+    "formats": [{ "weight": 1, "pattern": "{given} {family}" }]
+  }
+}
