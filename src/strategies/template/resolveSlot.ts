@@ -1,4 +1,5 @@
 import type { Lexicon, Slot } from "../../data/types.js";
+import { defaultGroupContext, GroupContext } from "../../kin/GroupContext.js";
 import type { RNG } from "../../rng/mulberry32.js";
 import { pickDigit, pickLowerLetter, pickUpperLetter } from "../../rng/pick.js";
 import { weightedChoice } from "../../rng/weightedChoice.js";
@@ -10,6 +11,10 @@ export interface ResolveSlotOptions {
   lexicons: ReadonlyMap<string, Lexicon>;
   lexiconRefs: Readonly<Record<string, string>>;
   rng: RNG;
+  /** Kin group this generation belongs to. Required (alongside a slot's `shareWithin`) for sharing to activate. */
+  groupId?: string;
+  /** Defaults to the process-wide `defaultGroupContext` singleton; inject your own for test isolation. */
+  groupContext?: GroupContext;
 }
 
 function resolveLexiconSlot(name: string, lexiconKey: string, options: ResolveSlotOptions): string {
@@ -56,6 +61,10 @@ function resolveProceduralSlot(pattern: string, rng: RNG): string {
  * `lexicon`/`procedural` slots always resolve, `optional` or not — the schema gives them no
  * chance/probability field, so whether an optional slot's value shows up in the rendered
  * name is controlled by format selection (weights), not by the slot failing to resolve.
+ *
+ * A slot with `shareWithin` set only actually shares when a `groupId` is also supplied —
+ * with no `groupId` (the common case: a single standalone `generate()` call) it just
+ * resolves fresh every time, same as a slot with no `shareWithin` at all.
  */
 export function resolveSlot(
   name: string,
@@ -63,6 +72,16 @@ export function resolveSlot(
   options: ResolveSlotOptions,
 ): string | undefined {
   if (slot.kind === "derived") return undefined;
-  if (slot.kind === "procedural") return resolveProceduralSlot(slot.pattern, options.rng);
-  return resolveLexiconSlot(name, slot.lexicon, options);
+
+  const resolveFresh = (): string =>
+    slot.kind === "procedural"
+      ? resolveProceduralSlot(slot.pattern, options.rng)
+      : resolveLexiconSlot(name, slot.lexicon, options);
+
+  if (slot.shareWithin && options.groupId) {
+    const groupContext = options.groupContext ?? defaultGroupContext;
+    return groupContext.getOrResolve(options.groupId, slot.shareWithin, resolveFresh);
+  }
+
+  return resolveFresh();
 }

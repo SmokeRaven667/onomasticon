@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mulberry32 } from "../../rng/mulberry32.js";
 import type { Lexicon } from "../../data/types.js";
+import { GroupContext } from "../../kin/GroupContext.js";
 import { resolveSlot } from "./resolveSlot.js";
 
 const GIVEN_LEXICON: Lexicon = {
@@ -128,6 +129,67 @@ describe("resolveSlot - procedural slots", () => {
         { lexicons: new Map(), lexiconRefs: {}, rng: mulberry32(88431) },
       );
     expect(runOnce()).toBe(runOnce());
+  });
+});
+
+describe("resolveSlot - shareWithin", () => {
+  it("ignores shareWithin without a groupId - resolves fresh from the lexicon every call", () => {
+    const rng = mulberry32(1);
+    const value = resolveSlot(
+      "family",
+      { kind: "lexicon", lexicon: "given", shareWithin: "kin" },
+      { lexicons: lexicons(), lexiconRefs: { given: "test-given" }, rng },
+    );
+    expect(GIVEN_LEXICON.entries.map((e) => e.value)).toContain(value);
+  });
+
+  it("shares the resolved value across calls in the same group under the same groupContext", () => {
+    const groupContext = new GroupContext();
+    const first = resolveSlot(
+      "family",
+      { kind: "lexicon", lexicon: "given", shareWithin: "kin" },
+      {
+        lexicons: lexicons(),
+        lexiconRefs: { given: "test-given" },
+        rng: mulberry32(1),
+        groupId: "kin-a7f",
+        groupContext,
+      },
+    );
+
+    for (let seed = 2; seed < 10; seed++) {
+      const value = resolveSlot(
+        "family",
+        { kind: "lexicon", lexicon: "given", shareWithin: "kin" },
+        {
+          lexicons: lexicons(),
+          lexiconRefs: { given: "test-given" },
+          rng: mulberry32(seed),
+          groupId: "kin-a7f",
+          groupContext,
+        },
+      );
+      expect(value).toBe(first);
+    }
+  });
+
+  it("keeps groups independent - a different groupId resolves its own fresh value", () => {
+    const groupContext = new GroupContext();
+    groupContext.getOrResolve("kin-a", "kin", () => "Alric");
+
+    const value = resolveSlot(
+      "family",
+      { kind: "lexicon", lexicon: "given", shareWithin: "kin" },
+      {
+        lexicons: lexicons(),
+        lexiconRefs: { given: "test-given" },
+        rng: mulberry32(1),
+        groupId: "kin-b",
+        groupContext,
+      },
+    );
+    expect(groupContext.get("kin-b", "kin")).toBe(value);
+    expect(groupContext.get("kin-a", "kin")).toBe("Alric");
   });
 });
 

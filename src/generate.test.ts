@@ -36,6 +36,20 @@ describe("generate", () => {
     expect(result.meta.groupId).toBe("kin-a7f");
   });
 
+  it("shares family and clan across a kin group while given keeps varying", () => {
+    const groupId = "kin-test-11-generate-family";
+    const results = [101, 202, 303].map((seed) =>
+      generate("highfantasy.elven", { seed, variant: "masc", context: { groupId } }),
+    );
+
+    const families = new Set(results.map((r) => r.parts.family));
+    const clans = new Set(results.map((r) => r.parts.clan));
+    const givens = new Set(results.map((r) => r.parts.given));
+    expect(families.size).toBe(1);
+    expect(clans.size).toBe(1);
+    expect(givens.size).toBeGreaterThan(1);
+  });
+
   it("works end-to-end against every bundled pack, callable from plain Node with no Foundry runtime", () => {
     const { packs } = loadRegistry();
     for (const packId of packs.keys()) {

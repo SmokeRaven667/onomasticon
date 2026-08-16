@@ -35,6 +35,7 @@ export function generateWithRegistry(
     variant: options.variant,
     rng,
     context: options.context,
+    groupId: options.context?.groupId,
   });
 
   return {

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { loadAllLexicons } from "../../data/loadLexicon.js";
 import { loadAllPacks, loadPackFile } from "../../data/loadPack.js";
 import type { Lexicon, Pack } from "../../data/types.js";
+import { GroupContext } from "../../kin/GroupContext.js";
 import { mulberry32 } from "../../rng/mulberry32.js";
 import { generateWithTemplate } from "./index.js";
 
@@ -63,5 +64,29 @@ describe("generateWithTemplate - real example packs", () => {
       families.add(result.parts.family!);
     }
     expect(families.size).toBeGreaterThan(1);
+  });
+
+  it("shareWithin makes family and clan agree across a kin group, given still varies", () => {
+    const pack = loadRealPack("highfantasy.elven.json");
+    const groupContext = new GroupContext();
+    const groupId = "kin-a7f";
+
+    const results = [11, 22, 33].map((seed) =>
+      generateWithTemplate({
+        pack,
+        lexicons,
+        variant: "masc",
+        rng: mulberry32(seed),
+        groupId,
+        groupContext,
+      }),
+    );
+
+    const families = new Set(results.map((r) => r.parts.family));
+    const clans = new Set(results.map((r) => r.parts.clan));
+    const givens = new Set(results.map((r) => r.parts.given));
+    expect(families.size).toBe(1);
+    expect(clans.size).toBe(1);
+    expect(givens.size).toBeGreaterThan(1);
   });
 });
