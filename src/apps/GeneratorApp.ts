@@ -9,6 +9,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 interface PackOption {
   id: string;
   label: string;
+  selectedAttr: "selected" | "";
 }
 
 interface PackGroup {
@@ -18,6 +19,7 @@ interface PackGroup {
 
 interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.RenderContext {
   packGroups: PackGroup[];
+  variant: string;
   results: Result[];
   error?: string;
 }
@@ -44,6 +46,8 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #registry: Registry | undefined;
   #results: Result[] = [];
   #error: string | undefined;
+  #selectedPackId: string | undefined;
+  #variant = "";
 
   protected override async _prepareContext(): Promise<GeneratorAppContext> {
     try {
@@ -51,14 +55,18 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       this.#error = undefined;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
-      return { packGroups: [], results: this.#results, error: this.#error };
+      return { packGroups: [], variant: this.#variant, results: this.#results, error: this.#error };
     }
 
     const groups = new Map<string, PackOption[]>();
     for (const pack of this.#registry.packs.values()) {
       const tag = pack.tags?.[0] ?? "other";
       const options = groups.get(tag) ?? [];
-      options.push({ id: pack.id, label: pack.label ?? pack.id });
+      options.push({
+        id: pack.id,
+        label: pack.label ?? pack.id,
+        selectedAttr: pack.id === this.#selectedPackId ? "selected" : "",
+      });
       groups.set(tag, options);
     }
 
@@ -66,6 +74,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       packGroups: [...groups.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([tag, packs]) => ({ tag, packs })),
+      variant: this.#variant,
       results: this.#results,
     };
   }
@@ -79,6 +88,9 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const packId = packSelect?.value;
     if (!packId) return;
     const variant = variantInput?.value.trim() || undefined;
+
+    this.#selectedPackId = packId;
+    this.#variant = variantInput?.value ?? "";
 
     try {
       const result = generateWithRegistry(packId, { variant }, this.#registry);

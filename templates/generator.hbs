@@ -8,7 +8,7 @@
         {{#each packGroups}}
           <optgroup label="{{tag}}">
             {{#each packs}}
-              <option value="{{id}}">{{label}}</option>
+              <option value="{{id}}" {{selectedAttr}}>{{label}}</option>
             {{/each}}
           </optgroup>
         {{/each}}
@@ -22,6 +22,7 @@
         type="text"
         name="variant"
         placeholder="masc, fem, neutral..."
+        value="{{variant}}"
       />
     </div>
 
