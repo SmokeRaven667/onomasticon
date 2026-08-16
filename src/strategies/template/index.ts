@@ -7,11 +7,7 @@ import { selectFormat } from "./selectFormat.js";
 
 export const TEMPLATE_STRATEGY_ID = "template";
 
-/**
- * Parent/kin context for derivations. `parent` is accepted now so the signature doesn't
- * change shape when step 12 (derivation engine) wires it up — until then it's accepted and
- * ignored, and `derived` slots always resolve to `undefined`.
- */
+/** Parent/kin context for derivations — `derived` slots resolve against `parent.parts` (see deriveSlot.ts). */
 export interface TemplateContext {
   parent?: Readonly<Record<string, string>>;
 }
@@ -34,7 +30,7 @@ export interface GenerateWithTemplateResult {
 }
 
 export function generateWithTemplate(input: GenerateWithTemplateInput): GenerateWithTemplateResult {
-  const { pack, lexicons, variant, rng, groupId, groupContext } = input;
+  const { pack, lexicons, variant, rng, context, groupId, groupContext } = input;
 
   if (pack.strategy !== TEMPLATE_STRATEGY_ID || !pack.config) {
     throw new Error(
@@ -42,7 +38,7 @@ export function generateWithTemplate(input: GenerateWithTemplateInput): Generate
     );
   }
 
-  const { slots, formats } = pack.config;
+  const { slots, formats, derivations } = pack.config;
   const lexiconRefs = pack.lexiconRefs ?? {};
 
   const parts: Record<string, string> = {};
@@ -54,6 +50,8 @@ export function generateWithTemplate(input: GenerateWithTemplateInput): Generate
       rng,
       groupId,
       groupContext,
+      parent: context?.parent,
+      derivations,
     });
     if (value !== undefined) parts[name] = value;
   }
