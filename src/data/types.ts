@@ -47,6 +47,15 @@ export interface TemplateConfig {
   derivations?: Derivation[];
 }
 
+export interface MarkovConfig {
+  /** Key into the pack's lexiconRefs map, pointing at the training-word lexicon. */
+  corpus: string;
+  /** N-gram context length in characters. */
+  order: number;
+  minLength?: number;
+  maxLength?: number;
+}
+
 export interface Pack {
   schemaVersion: 1;
   id: string;
@@ -57,7 +66,7 @@ export interface Pack {
   tags?: string[];
   strategy: string;
   lexiconRefs?: Record<string, string>;
-  config?: TemplateConfig;
+  config?: TemplateConfig | MarkovConfig;
 }
 
 export interface LexiconEntry {

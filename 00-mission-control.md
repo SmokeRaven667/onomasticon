@@ -48,7 +48,7 @@ Each of these is a strategy plugin or an adapter — they slot in cleanly once v
 
 | #   | Step                       | Status | File                                                                             |
 | --- | -------------------------- | ------ | -------------------------------------------------------------------------------- |
-| 18  | Markov / n-gram strategy   | ⏳     | [codesteps/18-markov-strategy.md](codesteps/18-markov-strategy.md)               |
+| 18  | Markov / n-gram strategy   | ✅     | [codesteps/18-markov-strategy.md](codesteps/18-markov-strategy.md)               |
 | 19  | Apply-to-actor adapter     | ⏳     | [codesteps/19-apply-to-actor-adapter.md](codesteps/19-apply-to-actor-adapter.md) |
 | 20  | Journal entry output       | ⏳     | [codesteps/20-journal-entry-output.md](codesteps/20-journal-entry-output.md)     |
 | 21  | Chat command               | ⏳     | [codesteps/21-chat-command.md](codesteps/21-chat-command.md)                     |

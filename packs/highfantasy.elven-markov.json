@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "highfantasy.elven-markov",
+  "label": "High Fantasy — Elven (Markov)",
+  "description": "Novel elven given names generated from the same elven-given corpus the template-based highfantasy.elven pack samples verbatim. Demonstrates the markov strategy: no slots or formats, just a trained corpus.",
+  "tags": ["fantasy", "elven", "markov"],
+  "strategy": "markov",
+  "lexiconRefs": {
+    "corpus": "elven-given"
+  },
+  "config": {
+    "corpus": "corpus",
+    "order": 2,
+    "minLength": 4,
+    "maxLength": 10
+  }
+}

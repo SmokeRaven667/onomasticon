@@ -178,4 +178,43 @@ describe("validatePackData", () => {
     expect(result.errors.length).toBeGreaterThan(0);
     expect(result.errors[0]?.code).toMatch(/^schema:/);
   });
+
+  describe("markov strategy", () => {
+    function markovPack(overrides: Partial<Pack> = {}): Pack {
+      return {
+        schemaVersion: 1,
+        id: "test.markov-pack",
+        strategy: "markov",
+        lexiconRefs: { corpus: "some-corpus" },
+        config: { corpus: "corpus", order: 2 },
+        ...overrides,
+      };
+    }
+
+    it("accepts a well-formed markov pack", () => {
+      const result = validatePackData(markovPack());
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("rejects config.corpus referencing a key missing from lexiconRefs", () => {
+      const result = validatePackData(markovPack({ config: { corpus: "not-in-refs", order: 2 } }));
+      expect(result.valid).toBe(false);
+      expect(result.errors.map((e) => e.code)).toContain("lexicon-ref-not-found");
+    });
+
+    it("rejects minLength greater than maxLength", () => {
+      const result = validatePackData(
+        markovPack({ config: { corpus: "corpus", order: 2, minLength: 10, maxLength: 5 } }),
+      );
+      expect(result.valid).toBe(false);
+      expect(result.errors.map((e) => e.code)).toContain("markov-min-length-exceeds-max");
+    });
+
+    it("rejects a non-integer order via structural schema validation", () => {
+      const result = validatePackData(markovPack({ config: { corpus: "corpus", order: 0 } }));
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]?.code).toMatch(/^schema:/);
+    });
+  });
 });

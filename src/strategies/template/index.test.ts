@@ -37,10 +37,11 @@ describe("generateWithTemplate - real example packs", () => {
     expect(runOnce()).toEqual(runOnce());
   });
 
-  it("generates a plausible full name from every bundled pack", () => {
+  it("generates a plausible full name from every bundled template-strategy pack", () => {
     const { entries } = loadAllPacks(PACKS_DIR);
     for (const entry of entries) {
       const pack = entry.result.pack!;
+      if (pack.strategy !== "template") continue;
       const result = generateWithTemplate({ pack, lexicons, rng: mulberry32(1) });
       expect(result.full.length, pack.id).toBeGreaterThan(0);
       expect(result.parts.given, pack.id).toBeDefined();
