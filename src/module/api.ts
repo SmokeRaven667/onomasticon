@@ -1,6 +1,10 @@
 import { applyToActor } from "../adapters/actorAdapter.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import { sendResultsToJournal, type SendToJournalOptions } from "../journal/sendToJournal.js";
+import {
+  exportPackAsRollTables,
+  type ExportedRollTable,
+} from "../rolltable/exportPackAsRollTables.js";
 import type { Pack } from "../data/types.js";
 import { validatePackData } from "../data/validatePack.js";
 import { generateKinWithRegistry, type GenerateKinOptions } from "../generateKinWithRegistry.js";
@@ -32,6 +36,8 @@ export interface OnomasticonApi {
     results: Result[],
     options?: SendToJournalOptions,
   ) => Promise<JournalEntry.Implementation>;
+  /** Exports a pack's referenced lexicons as RollTables — see src/rolltable/exportPackAsRollTables.ts. */
+  exportPackAsRollTables: (packId: string) => Promise<ExportedRollTable[]>;
 }
 
 function loadRegistry() {
@@ -85,6 +91,10 @@ async function registerPack(data: unknown): Promise<Pack> {
   return result.pack;
 }
 
+async function exportRollTables(packId: string): Promise<ExportedRollTable[]> {
+  return exportPackAsRollTables(packId, await loadRegistry());
+}
+
 function buildApi(): OnomasticonApi {
   return {
     openGenerator,
@@ -95,6 +105,7 @@ function buildApi(): OnomasticonApi {
     registerPack,
     applyToActor,
     sendResultsToJournal,
+    exportPackAsRollTables: exportRollTables,
   };
 }
 
