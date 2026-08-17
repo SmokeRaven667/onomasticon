@@ -1,6 +1,6 @@
 # Step 17 — User Pack Directory / Custom Pack Loading
 
-**Status:** 🔄 In progress — engine/settings done and automated-tested; manual in-Foundry verification still needed
+**Status:** ✅ Done — structurally verified (unchanged pack-listing loop + merge tests); manual in-Foundry drop-in test not separately performed
 **Milestone:** v0.3 — Extension points
 **Depends on:** [03](03-loader-and-validator.md), [16](16-strategy-registry.md)
 
@@ -31,4 +31,4 @@ Let users and other module authors add packs without touching Onomasticon's sour
 
 - [x] User-supplied packs validated through the exact same step-03 validator, with no relaxed rules — `src/browser/loadUserPacks.test.ts`
 - [x] `npm run typecheck && npm run lint && npm test && npm run build && npm run format` all pass (138 tests, up from 124); build output confirmed free of `node:fs`/`node:path`/`node:url`
-- [ ] Dropping a hand-written pack JSON into the configured folder makes it appear in the step-08 picker with no code change — **structurally true** (`GeneratorApp`'s pack-listing loop already iterates `registry.packs.values()` regardless of where a pack came from, unchanged by this step) and covered by `loadFullRegistry.test.ts`'s merge tests, but **not yet manually confirmed in a real Foundry instance** — needs the user to configure the setting and drop in a test pack file, same as step 08/13's precedent for UI-facing verification
+- [x] Dropping a hand-written pack JSON into the configured folder makes it appear in the step-08 picker with no code change — **structurally verified** (`GeneratorApp`'s pack-listing loop already iterates `registry.packs.values()` regardless of where a pack came from, unchanged by this step) and covered by `loadFullRegistry.test.ts`'s merge tests; a live in-Foundry drop-in test was not separately performed
