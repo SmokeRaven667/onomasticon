@@ -82,6 +82,22 @@
       </button>
     {{/if}}
 
+    <div class="form-group onomasticon-journal-controls">
+      <select
+        name="journalTarget"
+        title="{{localize 'ONOMASTICON.GeneratorApp.JournalTargetTitle'}}"
+      >
+        <option value="">{{localize "ONOMASTICON.GeneratorApp.JournalCreateNew"}}</option>
+        {{#each journalEntries}}
+          <option value="{{this.id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      <button type="button" data-action="sendToJournal">
+        <i class="fa-solid fa-book"></i>
+        {{localize "ONOMASTICON.GeneratorApp.SendToJournal"}}
+      </button>
+    </div>
+
     <ol class="onomasticon-results">
       {{#each results}}
         <li>

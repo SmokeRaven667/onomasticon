@@ -1,5 +1,6 @@
 import { applyToActor } from "../adapters/actorAdapter.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
+import { sendResultsToJournal, type SendToJournalOptions } from "../journal/sendToJournal.js";
 import type { Pack } from "../data/types.js";
 import { validatePackData } from "../data/validatePack.js";
 import { generateKinWithRegistry, type GenerateKinOptions } from "../generateKinWithRegistry.js";
@@ -26,6 +27,11 @@ export interface OnomasticonApi {
   registerPack: (data: unknown) => Promise<Pack>;
   /** Applies a generated Result to an actor — see src/adapters/actorAdapter.ts. Exposed here too so macro authors aren't limited to the GeneratorApp UI's own "apply to selected token" button. */
   applyToActor: (actor: Actor.Implementation, result: Result) => Promise<void>;
+  /** Sends a batch of results to a journal page — see src/journal/sendToJournal.ts. */
+  sendResultsToJournal: (
+    results: Result[],
+    options?: SendToJournalOptions,
+  ) => Promise<JournalEntry.Implementation>;
 }
 
 function loadRegistry() {
@@ -88,6 +94,7 @@ function buildApi(): OnomasticonApi {
     registerStrategy,
     registerPack,
     applyToActor,
+    sendResultsToJournal,
   };
 }
 
