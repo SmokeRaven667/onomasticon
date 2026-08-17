@@ -233,8 +233,74 @@ globalThis.ChatMessage = ChatMessageStub;
 // @ts-expect-error - fvtt-types declares `JournalEntry` as an ambient `const`, not a globalThis property.
 globalThis.JournalEntry = JournalEntryStub;
 
-// @ts-expect-error - fvtt-types declares `CONST` as an ambient module import, not a globalThis property.
-globalThis.CONST = { JOURNAL_ENTRY_PAGE_FORMATS: { HTML: 1, MARKDOWN: 2 } };
+interface RollTableResultStub {
+  type: string;
+  text: string;
+  weight: number;
+  range: [number, number];
+}
+
+let rollTableIdCounter = 0;
+const rollTableStore = new Map<string, RollTableStub>();
+
+/**
+ * Real (not mocked) in-memory `RollTable` stand-in — just enough of Foundry's document API
+ * (`create`, `normalize`) for src/rolltable/exportPackAsRollTables.ts to be tested without a
+ * live Foundry world. `normalize` assigns each result a range proportional to its weight
+ * (rounded, minimum 1), close enough to the real weighted-range behavior for tests to assert
+ * "a weight-2 entry covers a wider range than a weight-1 entry" without reimplementing core's
+ * exact algorithm.
+ */
+class RollTableStub {
+  #id: string;
+  name: string;
+  results: RollTableResultStub[];
+
+  constructor(id: string, name: string, results: RollTableResultStub[]) {
+    this.#id = id;
+    this.name = name;
+    this.results = results;
+  }
+
+  get id(): string {
+    return this.#id;
+  }
+
+  async normalize(): Promise<this> {
+    let cursor = 1;
+    for (const result of this.results) {
+      const span = Math.max(1, Math.round(result.weight));
+      result.range = [cursor, cursor + span - 1];
+      cursor += span;
+    }
+    return this;
+  }
+
+  static async create(data: {
+    name: string;
+    results?: RollTableResultStub[];
+  }): Promise<RollTableStub> {
+    const table = new RollTableStub(`table-${++rollTableIdCounter}`, data.name, data.results ?? []);
+    rollTableStore.set(table.id, table);
+    return table;
+  }
+}
+
+/** Test-only escape hatch: clears every stubbed RollTable. */
+export function resetRollTableStub(): void {
+  rollTableStore.clear();
+  rollTableIdCounter = 0;
+}
+
+// @ts-expect-error - fvtt-types declares `RollTable` as an ambient `const`, not a globalThis property.
+globalThis.RollTable = RollTableStub;
+
+// Cast: the real CONST.JOURNAL_ENTRY_PAGE_FORMATS/TABLE_RESULT_TYPES values are branded number
+// types this stub has no need to reproduce exactly — just their runtime shape.
+globalThis.CONST = {
+  JOURNAL_ENTRY_PAGE_FORMATS: { HTML: 1, MARKDOWN: 2 },
+  TABLE_RESULT_TYPES: { TEXT: "text", DOCUMENT: "document", COMPENDIUM: "pack" },
+} as unknown as typeof CONST;
 
 // @ts-expect-error - fvtt-types declares `game` as an ambient `const`, not a globalThis property.
 globalThis.game = {

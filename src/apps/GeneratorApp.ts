@@ -3,6 +3,7 @@ import { generateKinWithRegistry } from "../generateKinWithRegistry.js";
 import { generateWithRegistry } from "../generateWithRegistry.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import { sendResultsToJournal } from "../journal/sendToJournal.js";
+import { exportPackAsRollTables } from "../rolltable/exportPackAsRollTables.js";
 import { MODULE_ID } from "../module/constants.js";
 import type { Registry } from "../data/types.js";
 import type { Result } from "../types.js";
@@ -57,6 +58,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     position: { width: 480, height: "auto" as const },
     actions: {
       generate: GeneratorApp.#onGenerate,
+      exportRollTable: GeneratorApp.#onExportRollTable,
       copy: GeneratorApp.#onCopy,
       deleteResult: GeneratorApp.#onDeleteResult,
       applyToActor: GeneratorApp.#onApplyToActor,
@@ -186,6 +188,37 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     await this.render();
+  }
+
+  /**
+   * "Export pack as RollTable" (step 22) — acts on whichever pack is currently selected, not
+   * a generated result (there may be zero results yet). Creates one `RollTable` per lexicon
+   * the pack references, per `exportPackAsRollTables`'s own key decision to export raw word
+   * lists rather than pre-assembled full names.
+   */
+  static async #onExportRollTable(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    if (!this.#registry) return;
+
+    const packSelect = this.element.querySelector<HTMLSelectElement>('select[name="packId"]');
+    const packId = packSelect?.value;
+    if (!packId) return;
+    this.#selectedPackId = packId;
+
+    try {
+      const exported = await exportPackAsRollTables(packId, this.#registry);
+      // Safe: this handler only runs from a user click on an already-rendered dialog, long
+      // after Foundry's "i18nInit" hook has fired.
+      ui.notifications?.info(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.RollTableNotification", {
+          count: String(exported.length),
+        }),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      ui.notifications?.error(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ErrorNotification", { error: message }),
+      );
+    }
   }
 
   static async #onCopy(
