@@ -1,17 +1,9 @@
 import type { Result } from "../types.js";
+import { escapeHtml } from "../util/escapeHtml.js";
 
 export interface SendToJournalOptions {
   /** An existing JournalEntry's id to append a new page to, instead of creating a new entry. */
   appendToId?: string;
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function renderResultsHtml(results: readonly Result[]): string {
