@@ -1,6 +1,11 @@
 import { applyToActor } from "../adapters/actorAdapter.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import { sendResultsToJournal, type SendToJournalOptions } from "../journal/sendToJournal.js";
+import { createRosterActors } from "../roster/createRosterActors.js";
+import {
+  generateRosterWithRegistry,
+  type GenerateRosterOptions,
+} from "../roster/generateRoster.js";
 import {
   exportPackAsRollTables,
   type ExportedRollTable,
@@ -38,6 +43,14 @@ export interface OnomasticonApi {
   ) => Promise<JournalEntry.Implementation>;
   /** Exports a pack's referenced lexicons as RollTables — see src/rolltable/exportPackAsRollTables.ts. */
   exportPackAsRollTables: (packId: string) => Promise<ExportedRollTable[]>;
+  /** Generates `count` independent results — no shared kin context. See src/roster/generateRoster.ts. */
+  generateRoster: (
+    packId: string,
+    count: number,
+    options?: GenerateRosterOptions,
+  ) => Promise<Result[]>;
+  /** Bulk-creates one Actor per result — see src/roster/createRosterActors.ts. */
+  createRosterActors: (results: Result[]) => Promise<Actor.Implementation[]>;
 }
 
 function loadRegistry() {
@@ -95,6 +108,14 @@ async function exportRollTables(packId: string): Promise<ExportedRollTable[]> {
   return exportPackAsRollTables(packId, await loadRegistry());
 }
 
+async function generateRoster(
+  packId: string,
+  count: number,
+  options: GenerateRosterOptions = {},
+): Promise<Result[]> {
+  return generateRosterWithRegistry(packId, count, options, await loadRegistry());
+}
+
 function buildApi(): OnomasticonApi {
   return {
     openGenerator,
@@ -106,6 +127,8 @@ function buildApi(): OnomasticonApi {
     applyToActor,
     sendResultsToJournal,
     exportPackAsRollTables: exportRollTables,
+    generateRoster,
+    createRosterActors,
   };
 }
 
