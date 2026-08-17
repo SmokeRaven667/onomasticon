@@ -1,3 +1,4 @@
+import { applyToActor } from "../adapters/actorAdapter.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import type { Pack } from "../data/types.js";
 import { validatePackData } from "../data/validatePack.js";
@@ -23,6 +24,8 @@ export interface OnomasticonApi {
   listPacks: () => Promise<PackSummary[]>;
   registerStrategy: (id: string, implementation: StrategyImplementation) => void;
   registerPack: (data: unknown) => Promise<Pack>;
+  /** Applies a generated Result to an actor — see src/adapters/actorAdapter.ts. Exposed here too so macro authors aren't limited to the GeneratorApp UI's own "apply to selected token" button. */
+  applyToActor: (actor: Actor.Implementation, result: Result) => Promise<void>;
 }
 
 function loadRegistry() {
@@ -77,7 +80,15 @@ async function registerPack(data: unknown): Promise<Pack> {
 }
 
 function buildApi(): OnomasticonApi {
-  return { openGenerator, generate, generateKin, listPacks, registerStrategy, registerPack };
+  return {
+    openGenerator,
+    generate,
+    generateKin,
+    listPacks,
+    registerStrategy,
+    registerPack,
+    applyToActor,
+  };
 }
 
 /**

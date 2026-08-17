@@ -1,3 +1,4 @@
+import { applyToActor } from "../adapters/actorAdapter.js";
 import { generateKinWithRegistry } from "../generateKinWithRegistry.js";
 import { generateWithRegistry } from "../generateWithRegistry.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
@@ -51,6 +52,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       generate: GeneratorApp.#onGenerate,
       copy: GeneratorApp.#onCopy,
       deleteResult: GeneratorApp.#onDeleteResult,
+      applyToActor: GeneratorApp.#onApplyToActor,
       clearResults: GeneratorApp.#onClearResults,
       setKinRows: GeneratorApp.#onSetKinRows,
       generateKin: GeneratorApp.#onGenerateKin,
@@ -196,6 +198,45 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!Number.isInteger(index) || index < 1 || index > this.#results.length) return;
     this.#results.splice(index - 1, 1);
     await this.render();
+  }
+
+  /**
+   * "Apply to selected token's actor" (step 19) — targets the first controlled token on the
+   * active scene, same "selected token" scope the DoD names. No system-specific branching
+   * here; `applyToActor` (src/adapters/actorAdapter.ts) is the only place allowed to know a
+   * per-system override might exist, keeping this class decoupled from any one game system.
+   */
+  static async #onApplyToActor(
+    this: GeneratorApp,
+    _event: PointerEvent,
+    target: HTMLElement,
+  ): Promise<void> {
+    const index = Number(target.dataset.index);
+    if (!Number.isInteger(index) || index < 1 || index > this.#results.length) return;
+    const result = this.#results[index - 1]!;
+
+    // Safe: this handler only runs from a user click on an already-rendered dialog, long
+    // after Foundry's "canvasReady" hook has fired.
+    const actor = canvas!.tokens?.controlled[0]?.actor;
+    if (!actor) {
+      ui.notifications?.error(game.i18n!.localize("ONOMASTICON.GeneratorApp.NoTokenSelected"));
+      return;
+    }
+
+    try {
+      await applyToActor(actor, result);
+      ui.notifications?.info(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ApplyNotification", {
+          name: result.full,
+          actor: actor.name ?? "",
+        }),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      ui.notifications?.error(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ErrorNotification", { error: message }),
+      );
+    }
   }
 
   static async #onClearResults(this: GeneratorApp, _event: PointerEvent): Promise<void> {

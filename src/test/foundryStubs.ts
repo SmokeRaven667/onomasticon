@@ -119,12 +119,20 @@ const i18n = {
     ),
 };
 
+const system = { id: "" };
+
+/** Test-only escape hatch: sets `game.system.id`, e.g. to test a system-specific actor adapter. */
+export function setSystemIdStub(id: string): void {
+  system.id = id;
+}
+
 // @ts-expect-error - fvtt-types declares `game` as an ambient `const`, not a globalThis property.
 globalThis.game = {
   modules,
   clipboard: { copyPlainText: async (_text: string) => {} },
   i18n,
   settings,
+  system,
 };
 
 // @ts-expect-error - fvtt-types declares `ui` as an ambient `const`, not a globalThis property.
