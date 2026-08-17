@@ -84,6 +84,33 @@
       {{localize "ONOMASTICON.GeneratorApp.KinGenerate"}}
     </button>
 
+    <hr />
+
+    <div class="form-group onomasticon-roster-count">
+      <label for="onomasticon-roster-count">{{localize
+          "ONOMASTICON.GeneratorApp.RosterCountLabel"
+        }}</label>
+      <input
+        id="onomasticon-roster-count"
+        type="number"
+        name="rosterCount"
+        min="1"
+        value="{{rosterCount}}"
+      />
+    </div>
+
+    <button type="button" data-action="generateRoster">
+      <i class="fa-solid fa-users"></i>
+      {{localize "ONOMASTICON.GeneratorApp.GenerateRoster"}}
+    </button>
+
+    {{#if hasRoster}}
+      <button type="button" data-action="createRosterActors">
+        <i class="fa-solid fa-user-plus"></i>
+        {{localize "ONOMASTICON.GeneratorApp.CreateRosterActors"}}
+      </button>
+    {{/if}}
+
     {{#if showClearAll}}
       <button type="button" class="onomasticon-clear-all" data-action="clearResults">
         <i class="fa-solid fa-trash"></i>

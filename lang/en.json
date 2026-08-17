@@ -26,7 +26,12 @@
       "KinSetCountTitle": "Set up this many variant rows before generating the family",
       "KinSetCount": "Set Rows",
       "KinMemberLabel": "Member {number} variant",
-      "KinGenerate": "Generate Family"
+      "KinGenerate": "Generate Family",
+      "RosterCountLabel": "Roster size",
+      "GenerateRoster": "Generate Roster",
+      "RosterNotification": "Onomasticon: generated a roster of {count} and sent it to \"{entry}\"",
+      "CreateRosterActors": "Create Actors from Roster",
+      "RosterActorsNotification": "Onomasticon: created {count} actor(s) from the roster"
     },
     "ChatCommand": {
       "Usage": "Onomasticon: usage is /name <packId> [variant] [gm]"

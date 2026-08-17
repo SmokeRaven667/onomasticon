@@ -292,6 +292,49 @@ export function resetRollTableStub(): void {
   rollTableIdCounter = 0;
 }
 
+interface ActorCreateDataStub {
+  name: string;
+  type: string;
+}
+
+let actorIdCounter = 0;
+let actorDocumentTypes = ["character"];
+const createdActors: Array<ActorCreateDataStub & { id: string }> = [];
+
+/**
+ * Real (not mocked) `Actor` stand-in — just `createDocuments`, the only static call
+ * src/roster/createRosterActors.ts makes, recording every created actor for test assertions.
+ */
+const ActorStub = {
+  createDocuments: async (
+    data: ActorCreateDataStub[],
+  ): Promise<Array<ActorCreateDataStub & { id: string }>> => {
+    const created = data.map((entry) => ({ ...entry, id: `actor-${++actorIdCounter}` }));
+    createdActors.push(...created);
+    return created;
+  },
+};
+
+/** Test-only accessor: every actor created via the stubbed `Actor.createDocuments`, in call order. */
+export function getCreatedActorsStub(): Array<ActorCreateDataStub & { id: string }> {
+  return createdActors;
+}
+
+/** Test-only escape hatch: sets `game.documentTypes.Actor`, e.g. to test the "no registered type" error path. */
+export function setActorDocumentTypesStub(types: string[]): void {
+  actorDocumentTypes = types;
+}
+
+/** Test-only escape hatch: clears every stubbed actor and resets `game.documentTypes.Actor` to its default. */
+export function resetActorStub(): void {
+  createdActors.length = 0;
+  actorIdCounter = 0;
+  actorDocumentTypes = ["character"];
+}
+
+// @ts-expect-error - fvtt-types declares `Actor` as an ambient `const`, not a globalThis property.
+globalThis.Actor = ActorStub;
+
 // @ts-expect-error - fvtt-types declares `RollTable` as an ambient `const`, not a globalThis property.
 globalThis.RollTable = RollTableStub;
 
@@ -310,6 +353,9 @@ globalThis.game = {
   settings,
   system,
   journal,
+  get documentTypes(): { Actor: string[] } {
+    return { Actor: actorDocumentTypes };
+  },
 };
 
 // @ts-expect-error - fvtt-types declares `ui` as an ambient `const`, not a globalThis property.

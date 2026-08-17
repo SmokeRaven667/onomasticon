@@ -4,6 +4,8 @@ import { generateWithRegistry } from "../generateWithRegistry.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
 import { sendResultsToJournal } from "../journal/sendToJournal.js";
 import { exportPackAsRollTables } from "../rolltable/exportPackAsRollTables.js";
+import { createRosterActors } from "../roster/createRosterActors.js";
+import { generateRosterWithRegistry } from "../roster/generateRoster.js";
 import { MODULE_ID } from "../module/constants.js";
 import type { Registry } from "../data/types.js";
 import type { Result } from "../types.js";
@@ -45,6 +47,8 @@ interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.Ren
   kinRows: KinRow[];
   showClearAll: boolean;
   journalEntries: JournalOption[];
+  rosterCount: number;
+  hasRoster: boolean;
 }
 
 export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -66,6 +70,8 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       clearResults: GeneratorApp.#onClearResults,
       setKinRows: GeneratorApp.#onSetKinRows,
       generateKin: GeneratorApp.#onGenerateKin,
+      generateRoster: GeneratorApp.#onGenerateRoster,
+      createRosterActors: GeneratorApp.#onCreateRosterActors,
     },
   };
 
@@ -81,6 +87,9 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #kinCount = 1;
   /** One entry per kin-row variant input, in row order — "ask variant per row before generating". */
   #kinVariants: string[] = [""];
+  #rosterCount = 5;
+  /** The most recent roster batch (step 23) — kept separate from `#results` (which mixes in single/kin generations too) so "Create Actors from Roster" knows exactly which results it targets. */
+  #lastRosterResults: Result[] = [];
 
   protected override async _prepareContext(): Promise<GeneratorAppContext> {
     try {
@@ -97,6 +106,8 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         kinRows: this.#kinRows(),
         showClearAll: this.#results.length >= 3,
         journalEntries: [],
+        rosterCount: this.#rosterCount,
+        hasRoster: this.#lastRosterResults.length > 0,
       };
     }
 
@@ -127,6 +138,8 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         id: entry.id!,
         name: entry.name,
       })),
+      rosterCount: this.#rosterCount,
+      hasRoster: this.#lastRosterResults.length > 0,
     };
   }
 
@@ -381,5 +394,76 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     await this.render();
+  }
+
+  /**
+   * "Generate roster of N NPCs" (step 23) — independent results, no shared surname/kin
+   * context (unlike #onGenerateKin). Automatically sends the whole batch to a new journal
+   * page (reusing step 20's `sendResultsToJournal` directly), satisfying this step's "output
+   * as a journal page" deliverable in the same one-click action the goal calls for. Actor
+   * output is a separate opt-in follow-up (#onCreateRosterActors) rather than automatic here
+   * — creating N new world documents unprompted is a bigger surprise than a journal entry.
+   */
+  static async #onGenerateRoster(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    if (!this.#registry) return;
+
+    const packSelect = this.element.querySelector<HTMLSelectElement>('select[name="packId"]');
+    const variantInput = this.element.querySelector<HTMLInputElement>('input[name="variant"]');
+    const countInput = this.element.querySelector<HTMLInputElement>('input[name="rosterCount"]');
+    const packId = packSelect?.value;
+    if (!packId) return;
+
+    this.#selectedPackId = packId;
+    this.#variant = variantInput?.value ?? this.#variant;
+    this.#rosterCount = Math.max(1, Math.trunc(Number(countInput?.value)) || 1);
+
+    try {
+      const results = generateRosterWithRegistry(
+        packId,
+        this.#rosterCount,
+        { variant: this.#variant.trim() || undefined },
+        this.#registry,
+      );
+      this.#results.unshift(...results);
+      this.#lastRosterResults = results;
+
+      const entry = await sendResultsToJournal(results);
+      // Safe: this handler only runs from a user click on an already-rendered dialog, long
+      // after Foundry's "i18nInit" hook has fired.
+      ui.notifications?.info(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.RosterNotification", {
+          count: String(results.length),
+          entry: entry.name,
+        }),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      ui.notifications?.error(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ErrorNotification", { error: message }),
+      );
+    }
+
+    await this.render();
+  }
+
+  /** Creates one Actor per result in the most recent roster batch — see src/roster/createRosterActors.ts. */
+  static async #onCreateRosterActors(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    if (this.#lastRosterResults.length === 0) return;
+
+    try {
+      const actors = await createRosterActors(this.#lastRosterResults);
+      // Safe: this handler only runs from a user click on an already-rendered dialog, long
+      // after Foundry's "i18nInit" hook has fired.
+      ui.notifications?.info(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.RosterActorsNotification", {
+          count: String(actors.length),
+        }),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      ui.notifications?.error(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ErrorNotification", { error: message }),
+      );
+    }
   }
 }
