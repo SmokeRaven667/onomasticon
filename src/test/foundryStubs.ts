@@ -126,6 +126,80 @@ export function setSystemIdStub(id: string): void {
   system.id = id;
 }
 
+interface JournalEntryPageStub {
+  id: string;
+  name: string;
+  type: string;
+  text?: { content: string; format: number };
+}
+
+let journalIdCounter = 0;
+let pageIdCounter = 0;
+const journalStore = new Map<string, JournalEntryStub>();
+
+/**
+ * Real (not mocked) in-memory `JournalEntry` stand-in — just enough of Foundry's document API
+ * (`create`, `createEmbeddedDocuments`) for src/journal/sendToJournal.ts to be tested without
+ * a live Foundry world. `pages` is a real `Map` (not an array) so it structurally matches
+ * enough of the real `EmbeddedCollection` (`.size`, `.get`, `.values()`) for test code typed
+ * against the real `JournalEntry.Implementation` interface to work against this stub. Ids are
+ * assigned in creation order, not random, so tests can assert against a known id.
+ */
+class JournalEntryStub {
+  #id: string;
+  name: string;
+  pages: Map<string, JournalEntryPageStub>;
+
+  constructor(id: string, name: string, pages: Map<string, JournalEntryPageStub>) {
+    this.#id = id;
+    this.name = name;
+    this.pages = pages;
+  }
+
+  get id(): string {
+    return this.#id;
+  }
+
+  async createEmbeddedDocuments(
+    _type: "JournalEntryPage",
+    data: Array<Omit<JournalEntryPageStub, "id">>,
+  ): Promise<JournalEntryPageStub[]> {
+    const created = data.map((page) => ({ ...page, id: `page-${++pageIdCounter}` }));
+    for (const page of created) this.pages.set(page.id, page);
+    return created;
+  }
+
+  static async create(data: {
+    name: string;
+    pages?: Array<Omit<JournalEntryPageStub, "id">>;
+  }): Promise<JournalEntryStub> {
+    const entry = new JournalEntryStub(`journal-${++journalIdCounter}`, data.name, new Map());
+    if (data.pages) await entry.createEmbeddedDocuments("JournalEntryPage", data.pages);
+    journalStore.set(entry.id, entry);
+    return entry;
+  }
+}
+
+const journal = {
+  get: (id: string): JournalEntryStub | undefined => journalStore.get(id),
+  get contents(): JournalEntryStub[] {
+    return [...journalStore.values()];
+  },
+};
+
+/** Test-only escape hatch: clears every stubbed journal entry. */
+export function resetJournalStub(): void {
+  journalStore.clear();
+  journalIdCounter = 0;
+  pageIdCounter = 0;
+}
+
+// @ts-expect-error - fvtt-types declares `JournalEntry` as an ambient `const`, not a globalThis property.
+globalThis.JournalEntry = JournalEntryStub;
+
+// @ts-expect-error - fvtt-types declares `CONST` as an ambient module import, not a globalThis property.
+globalThis.CONST = { JOURNAL_ENTRY_PAGE_FORMATS: { HTML: 1, MARKDOWN: 2 } };
+
 // @ts-expect-error - fvtt-types declares `game` as an ambient `const`, not a globalThis property.
 globalThis.game = {
   modules,
@@ -133,6 +207,7 @@ globalThis.game = {
   i18n,
   settings,
   system,
+  journal,
 };
 
 // @ts-expect-error - fvtt-types declares `ui` as an ambient `const`, not a globalThis property.

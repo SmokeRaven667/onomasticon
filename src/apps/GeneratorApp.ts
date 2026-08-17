@@ -2,6 +2,7 @@ import { applyToActor } from "../adapters/actorAdapter.js";
 import { generateKinWithRegistry } from "../generateKinWithRegistry.js";
 import { generateWithRegistry } from "../generateWithRegistry.js";
 import { loadFullRegistry } from "../browser/loadFullRegistry.js";
+import { sendResultsToJournal } from "../journal/sendToJournal.js";
 import { MODULE_ID } from "../module/constants.js";
 import type { Registry } from "../data/types.js";
 import type { Result } from "../types.js";
@@ -29,6 +30,11 @@ interface KinRow {
   variant: string;
 }
 
+interface JournalOption {
+  id: string;
+  name: string;
+}
+
 interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.RenderContext {
   packGroups: PackGroup[];
   variant: string;
@@ -37,6 +43,7 @@ interface GeneratorAppContext extends foundry.applications.api.ApplicationV2.Ren
   kinCount: number;
   kinRows: KinRow[];
   showClearAll: boolean;
+  journalEntries: JournalOption[];
 }
 
 export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -53,6 +60,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       copy: GeneratorApp.#onCopy,
       deleteResult: GeneratorApp.#onDeleteResult,
       applyToActor: GeneratorApp.#onApplyToActor,
+      sendToJournal: GeneratorApp.#onSendToJournal,
       clearResults: GeneratorApp.#onClearResults,
       setKinRows: GeneratorApp.#onSetKinRows,
       generateKin: GeneratorApp.#onGenerateKin,
@@ -86,6 +94,7 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         kinCount: this.#kinCount,
         kinRows: this.#kinRows(),
         showClearAll: this.#results.length >= 3,
+        journalEntries: [],
       };
     }
 
@@ -110,6 +119,12 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       kinCount: this.#kinCount,
       kinRows: this.#kinRows(),
       showClearAll: this.#results.length >= 3,
+      // Safe: _prepareContext only ever runs from render(), long after Foundry's "setup"
+      // hook (where game.journal becomes available) has fired.
+      journalEntries: (game.journal?.contents ?? []).map((entry) => ({
+        id: entry.id!,
+        name: entry.name,
+      })),
     };
   }
 
@@ -241,6 +256,40 @@ export class GeneratorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #onClearResults(this: GeneratorApp, _event: PointerEvent): Promise<void> {
     this.#results = [];
+    await this.render();
+  }
+
+  /**
+   * "Send to journal" (step 20) — operates on the whole current batch, not one result (unlike
+   * copy/delete/applyToActor), giving generated names a durable home beyond the dialog's own
+   * result list. Defaults to a new JournalEntry per batch; picking an existing entry from the
+   * `journalTarget` select appends a page to it instead, per this codestep's key decision.
+   */
+  static async #onSendToJournal(this: GeneratorApp, _event: PointerEvent): Promise<void> {
+    if (this.#results.length === 0) return;
+
+    const journalSelect = this.element.querySelector<HTMLSelectElement>(
+      'select[name="journalTarget"]',
+    );
+    const appendToId = journalSelect?.value || undefined;
+
+    try {
+      const entry = await sendResultsToJournal(this.#results, { appendToId });
+      // Safe: this handler only runs from a user click on an already-rendered dialog, long
+      // after Foundry's "i18nInit" hook has fired.
+      ui.notifications?.info(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.JournalNotification", {
+          count: String(this.#results.length),
+          entry: entry.name,
+        }),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      ui.notifications?.error(
+        game.i18n!.format("ONOMASTICON.GeneratorApp.ErrorNotification", { error: message }),
+      );
+    }
+
     await this.render();
   }
 
