@@ -17,6 +17,12 @@
       "KinSetCount": "Set Rows",
       "KinMemberLabel": "Member {number} variant",
       "KinGenerate": "Generate Family"
+    },
+    "Settings": {
+      "UserPackPath": {
+        "Name": "User Pack Directory",
+        "Hint": "Optional directory (relative to Foundry's Data folder) scanned for your own pack JSON files, in addition to the bundled packs. Leave empty to disable."
+      }
     }
   }
 }
