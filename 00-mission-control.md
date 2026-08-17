@@ -54,7 +54,7 @@ Each of these is a strategy plugin or an adapter — they slot in cleanly once v
 | 21  | Chat command               | ✅     | [codesteps/21-chat-command.md](codesteps/21-chat-command.md)                     |
 | 22  | RollTable export           | ✅     | [codesteps/22-rolltable-export.md](codesteps/22-rolltable-export.md)             |
 | 23  | Batch NPC roster generator | ✅     | [codesteps/23-batch-npc-roster.md](codesteps/23-batch-npc-roster.md)             |
-| 24  | Pack authoring UI          | ⏳     | [codesteps/24-pack-authoring-ui.md](codesteps/24-pack-authoring-ui.md)           |
+| 24  | Pack authoring UI          | ✅     | [codesteps/24-pack-authoring-ui.md](codesteps/24-pack-authoring-ui.md)           |
 
 ## Non-negotiables (apply to every step)
 
