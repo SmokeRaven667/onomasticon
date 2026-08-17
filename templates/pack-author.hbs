@@ -1,0 +1,208 @@
+<div class="onomasticon-pack-author">
+  <p class="notification info">
+    {{localize "ONOMASTICON.PackAuthorApp.Intro"}}
+  </p>
+
+  <fieldset>
+    <legend>{{localize "ONOMASTICON.PackAuthorApp.MetadataLegend"}}</legend>
+
+    <div class="form-group">
+      <label for="onomasticon-pack-id">{{localize "ONOMASTICON.PackAuthorApp.IdLabel"}}</label>
+      <input
+        id="onomasticon-pack-id"
+        type="text"
+        name="id"
+        value="{{id}}"
+        placeholder="highfantasy.my-pack"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="onomasticon-pack-label">{{localize
+          "ONOMASTICON.PackAuthorApp.LabelLabel"
+        }}</label>
+      <input id="onomasticon-pack-label" type="text" name="label" value="{{label}}" />
+    </div>
+
+    <div class="form-group">
+      <label for="onomasticon-pack-description">{{localize
+          "ONOMASTICON.PackAuthorApp.DescriptionLabel"
+        }}</label>
+      <textarea
+        id="onomasticon-pack-description"
+        name="description"
+        rows="2"
+      >{{description}}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="onomasticon-pack-author">{{localize
+          "ONOMASTICON.PackAuthorApp.AuthorLabel"
+        }}</label>
+      <input id="onomasticon-pack-author" type="text" name="author" value="{{author}}" />
+    </div>
+
+    <div class="form-group">
+      <label for="onomasticon-pack-version">{{localize
+          "ONOMASTICON.PackAuthorApp.PackVersionLabel"
+        }}</label>
+      <input id="onomasticon-pack-version" type="text" name="packVersion" value="{{packVersion}}" />
+    </div>
+
+    <div class="form-group">
+      <label for="onomasticon-pack-tags">{{localize "ONOMASTICON.PackAuthorApp.TagsLabel"}}</label>
+      <input
+        id="onomasticon-pack-tags"
+        type="text"
+        name="tags"
+        value="{{tags}}"
+        placeholder="fantasy, homebrew"
+      />
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{localize "ONOMASTICON.PackAuthorApp.SlotsLegend"}}</legend>
+
+    {{#each slots}}
+      <div class="onomasticon-slot-row">
+        <input
+          type="text"
+          data-field="name"
+          value="{{this.name}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.SlotNamePlaceholder'}}"
+        />
+        <select data-field="kind">
+          <option value="lexicon" {{this.lexiconKindSelectedAttr}}>{{localize
+              "ONOMASTICON.PackAuthorApp.KindLexicon"
+            }}</option>
+          <option value="procedural" {{this.proceduralKindSelectedAttr}}>{{localize
+              "ONOMASTICON.PackAuthorApp.KindProcedural"
+            }}</option>
+          <option value="derived" {{this.derivedKindSelectedAttr}}>{{localize
+              "ONOMASTICON.PackAuthorApp.KindDerived"
+            }}</option>
+        </select>
+        <select
+          data-field="lexicon"
+          title="{{localize 'ONOMASTICON.PackAuthorApp.LexiconFieldTitle'}}"
+        >
+          <option value=""></option>
+          {{#each this.lexiconOptions}}
+            <option value="{{this.id}}" {{this.selectedAttr}}>{{this.id}}</option>
+          {{/each}}
+        </select>
+        <input
+          type="text"
+          data-field="variants"
+          value="{{this.variants}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.VariantsPlaceholder'}}"
+          title="{{localize 'ONOMASTICON.PackAuthorApp.LexiconFieldTitle'}}"
+        />
+        <input
+          type="text"
+          data-field="pattern"
+          value="{{this.pattern}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.PatternPlaceholder'}}"
+          title="{{localize 'ONOMASTICON.PackAuthorApp.ProceduralFieldTitle'}}"
+        />
+        <label class="onomasticon-inline-checkbox">
+          <input type="checkbox" data-field="optional" {{this.optionalCheckedAttr}} />
+          {{localize "ONOMASTICON.PackAuthorApp.OptionalLabel"}}
+        </label>
+        <input
+          type="text"
+          data-field="shareWithin"
+          value="{{this.shareWithin}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.ShareWithinPlaceholder'}}"
+        />
+        <button
+          type="button"
+          data-action="removeSlot"
+          data-index="{{@index}}"
+          title="{{localize 'ONOMASTICON.PackAuthorApp.RemoveSlotTitle'}}"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    {{/each}}
+
+    <button type="button" data-action="addSlot">
+      <i class="fa-solid fa-plus"></i>
+      {{localize "ONOMASTICON.PackAuthorApp.AddSlot"}}
+    </button>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{localize "ONOMASTICON.PackAuthorApp.FormatsLegend"}}</legend>
+
+    {{#each formats}}
+      <div class="onomasticon-format-row">
+        <input
+          type="text"
+          data-field="pattern"
+          value="{{this.pattern}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.FormatPatternPlaceholder'}}"
+        />
+        <input
+          type="number"
+          data-field="weight"
+          value="{{this.weight}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.WeightPlaceholder'}}"
+        />
+        <input
+          type="text"
+          data-field="requires"
+          value="{{this.requires}}"
+          placeholder="{{localize 'ONOMASTICON.PackAuthorApp.RequiresPlaceholder'}}"
+        />
+        <button
+          type="button"
+          data-action="removeFormat"
+          data-index="{{@index}}"
+          title="{{localize 'ONOMASTICON.PackAuthorApp.RemoveFormatTitle'}}"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    {{/each}}
+
+    <button type="button" data-action="addFormat">
+      <i class="fa-solid fa-plus"></i>
+      {{localize "ONOMASTICON.PackAuthorApp.AddFormat"}}
+    </button>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{localize "ONOMASTICON.PackAuthorApp.DerivationsLegend"}}</legend>
+    <p class="hint">{{localize "ONOMASTICON.PackAuthorApp.DerivationsHint"}}</p>
+    <textarea name="derivationsJson" rows="4">{{derivationsJson}}</textarea>
+  </fieldset>
+
+  <fieldset class="onomasticon-validation">
+    <legend>{{localize "ONOMASTICON.PackAuthorApp.ValidationLegend"}}</legend>
+    {{#if valid}}
+      <p class="notification success">{{localize "ONOMASTICON.PackAuthorApp.Valid"}}</p>
+    {{else}}
+      <ul class="onomasticon-validation-errors">
+        {{#each errors}}
+          <li>[{{this.code}}] {{this.message}}</li>
+        {{/each}}
+      </ul>
+    {{/if}}
+  </fieldset>
+
+  {{#if saveMessage}}
+    <p class="notification success">{{saveMessage}}</p>
+  {{/if}}
+
+  <button type="button" data-action="validate">
+    <i class="fa-solid fa-check"></i>
+    {{localize "ONOMASTICON.PackAuthorApp.Validate"}}
+  </button>
+
+  <button type="button" data-action="save" {{saveDisabledAttr}}>
+    <i class="fa-solid fa-floppy-disk"></i>
+    {{localize "ONOMASTICON.PackAuthorApp.Save"}}
+  </button>
+</div>

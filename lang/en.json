@@ -1,6 +1,7 @@
 {
   "ONOMASTICON": {
     "LaunchButton": "Onomasticon",
+    "AuthorLaunchButton": "Onomasticon: Author Pack",
     "GeneratorApp": {
       "Title": "Onomasticon — Name Generator",
       "PackLabel": "Pack",
@@ -35,6 +36,43 @@
     },
     "ChatCommand": {
       "Usage": "Onomasticon: usage is /name <packId> [variant] [gm]"
+    },
+    "PackAuthorApp": {
+      "Title": "Onomasticon — Author a Pack",
+      "Intro": "Build a template-strategy pack from slots and formats. Derivations (patronymics, clan prefixes, etc.) are still hand-edited as JSON below — the v1 authoring form doesn't cover them.",
+      "MetadataLegend": "Pack Metadata",
+      "IdLabel": "Id",
+      "LabelLabel": "Label",
+      "DescriptionLabel": "Description",
+      "AuthorLabel": "Author",
+      "PackVersionLabel": "Pack Version",
+      "TagsLabel": "Tags",
+      "SlotsLegend": "Slots",
+      "SlotNamePlaceholder": "Slot name",
+      "KindLexicon": "Lexicon",
+      "KindProcedural": "Procedural",
+      "KindDerived": "Derived",
+      "LexiconFieldTitle": "Lexicon slots only",
+      "VariantsPlaceholder": "masc, fem, neutral",
+      "PatternPlaceholder": "{L}{L}-{D}{D}{D}",
+      "ProceduralFieldTitle": "Procedural slots only",
+      "OptionalLabel": "Optional",
+      "ShareWithinPlaceholder": "Share key (e.g. kin)",
+      "RemoveSlotTitle": "Remove this slot",
+      "AddSlot": "Add Slot",
+      "FormatsLegend": "Formats",
+      "FormatPatternPlaceholder": "{given} {family}",
+      "WeightPlaceholder": "Weight",
+      "RequiresPlaceholder": "Requires (comma-separated slot names)",
+      "RemoveFormatTitle": "Remove this format",
+      "AddFormat": "Add Format",
+      "DerivationsLegend": "Derivations (advanced, optional)",
+      "DerivationsHint": "Raw JSON array, same shape as config.derivations in a hand-written pack file. Leave empty for a pack with no derived slots.",
+      "ValidationLegend": "Validation",
+      "Valid": "Valid — ready to save.",
+      "Validate": "Validate",
+      "Save": "Save to User Pack Directory",
+      "SavedNotification": "Onomasticon: saved \"{id}\" to {path}"
     },
     "Settings": {
       "UserPackPath": {

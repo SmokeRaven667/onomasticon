@@ -17,8 +17,9 @@ import { generateWithRegistry } from "../generateWithRegistry.js";
 import { registerStrategy, type StrategyImplementation } from "../strategies/registry.js";
 import type { GenerateOptions, Result } from "../types.js";
 import type { GeneratorApp } from "../apps/GeneratorApp.js";
+import type { PackAuthorApp } from "../apps/PackAuthorApp.js";
 import { MODULE_ID } from "./constants.js";
-import { openGenerator } from "./launchPoint.js";
+import { openGenerator, openPackAuthor } from "./launchPoint.js";
 
 export interface PackSummary {
   id: string;
@@ -29,6 +30,8 @@ export interface PackSummary {
 
 export interface OnomasticonApi {
   openGenerator: () => GeneratorApp;
+  /** Opens the pack authoring form (step 24) — see src/apps/PackAuthorApp.ts. */
+  openPackAuthor: () => PackAuthorApp;
   generate: (packId: string, options?: GenerateOptions) => Promise<Result>;
   generateKin: (packId: string, count: number, options?: GenerateKinOptions) => Promise<Result[]>;
   listPacks: () => Promise<PackSummary[]>;
@@ -119,6 +122,7 @@ async function generateRoster(
 function buildApi(): OnomasticonApi {
   return {
     openGenerator,
+    openPackAuthor,
     generate,
     generateKin,
     listPacks,
