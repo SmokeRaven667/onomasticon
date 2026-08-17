@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { mulberry32 } from "../rng/mulberry32.js";
 import type { Pack } from "../data/types.js";
 import { getStrategy, registerStrategy, resetStrategyRegistry } from "./registry.js";
+import { MARKOV_STRATEGY_ID } from "./markov/index.js";
 import { TEMPLATE_STRATEGY_ID } from "./template/index.js";
 
 beforeEach(() => {
@@ -13,8 +14,12 @@ describe("getStrategy", () => {
     expect(getStrategy(TEMPLATE_STRATEGY_ID)).toBeTypeOf("function");
   });
 
+  it("returns the built-in markov strategy", () => {
+    expect(getStrategy(MARKOV_STRATEGY_ID)).toBeTypeOf("function");
+  });
+
   it("returns undefined for an unregistered id", () => {
-    expect(getStrategy("markov")).toBeUndefined();
+    expect(getStrategy("not-a-real-strategy")).toBeUndefined();
   });
 });
 
@@ -47,6 +52,12 @@ describe("registerStrategy", () => {
     );
   });
 
+  it("throws when registering under the reserved 'markov' id", () => {
+    expect(() => registerStrategy(MARKOV_STRATEGY_ID, () => ({ full: "", parts: {} }))).toThrow(
+      /reserved/,
+    );
+  });
+
   it("throws when re-registering an id that's already taken", () => {
     registerStrategy("noop-test", () => ({ full: "", parts: {} }));
     expect(() => registerStrategy("noop-test", () => ({ full: "", parts: {} }))).toThrow(
@@ -56,11 +67,12 @@ describe("registerStrategy", () => {
 });
 
 describe("resetStrategyRegistry", () => {
-  it("drops custom registrations but keeps the built-in template strategy", () => {
+  it("drops custom registrations but keeps the built-in strategies", () => {
     registerStrategy("noop-test", () => ({ full: "", parts: {} }));
     resetStrategyRegistry();
 
     expect(getStrategy("noop-test")).toBeUndefined();
     expect(getStrategy(TEMPLATE_STRATEGY_ID)).toBeTypeOf("function");
+    expect(getStrategy(MARKOV_STRATEGY_ID)).toBeTypeOf("function");
   });
 });

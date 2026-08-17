@@ -50,9 +50,47 @@
         "required": ["config"],
         "properties": { "config": { "$ref": "#/$defs/templateConfig" } }
       }
+    },
+    {
+      "if": {
+        "properties": { "strategy": { "const": "markov" } },
+        "required": ["strategy"]
+      },
+      "then": {
+        "required": ["config"],
+        "properties": { "config": { "$ref": "#/$defs/markovConfig" } }
+      }
     }
   ],
   "$defs": {
+    "markovConfig": {
+      "type": "object",
+      "required": ["corpus", "order"],
+      "additionalProperties": false,
+      "properties": {
+        "corpus": {
+          "type": "string",
+          "description": "Key into the pack's lexiconRefs map, pointing at a training-word lexicon (a plain list of example names, not raw text)."
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "N-gram context length in characters. Higher orders track corpus style more closely but generalize less."
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3,
+          "description": "Shortest name (in characters) to accept before retrying the walk."
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 12,
+          "description": "Longest name (in characters) before the walk is cut off."
+        }
+      }
+    },
     "templateConfig": {
       "type": "object",
       "required": ["slots", "formats"],

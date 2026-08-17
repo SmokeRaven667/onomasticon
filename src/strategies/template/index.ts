@@ -1,4 +1,4 @@
-import type { Lexicon, Pack } from "../../data/types.js";
+import type { Lexicon, Pack, TemplateConfig } from "../../data/types.js";
 import { GroupContext } from "../../kin/GroupContext.js";
 import type { RNG } from "../../rng/mulberry32.js";
 import { renderPattern } from "./renderPattern.js";
@@ -38,7 +38,7 @@ export function generateWithTemplate(input: GenerateWithTemplateInput): Generate
     );
   }
 
-  const { slots, formats, derivations } = pack.config;
+  const { slots, formats, derivations } = pack.config as TemplateConfig;
   const lexiconRefs = pack.lexiconRefs ?? {};
 
   const parts: Record<string, string> = {};

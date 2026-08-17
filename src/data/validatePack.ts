@@ -2,9 +2,11 @@ import { validatePackSchema } from "./schemas.js";
 import type {
   Derivation,
   Format,
+  MarkovConfig,
   Pack,
   PackValidationResult,
   Slot,
+  TemplateConfig,
   ValidationError,
 } from "./types.js";
 
@@ -154,10 +156,40 @@ function checkLexiconRefs(pack: Pack, slots: Record<string, Slot>): ValidationEr
   return errors;
 }
 
+function checkMarkovConfig(pack: Pack): ValidationError[] {
+  if (pack.strategy !== "markov" || !pack.config) return [];
+
+  const errors: ValidationError[] = [];
+  const config = pack.config as MarkovConfig;
+  const lexiconRefs = pack.lexiconRefs ?? {};
+
+  if (!(config.corpus in lexiconRefs)) {
+    errors.push({
+      code: "lexicon-ref-not-found",
+      message: `config.corpus references lexicon key "${config.corpus}", which is not present in lexiconRefs.`,
+      path: "config.corpus",
+    });
+  }
+
+  const minLength = config.minLength ?? 3;
+  const maxLength = config.maxLength ?? 12;
+  if (minLength > maxLength) {
+    errors.push({
+      code: "markov-min-length-exceeds-max",
+      message: `config.minLength (${minLength}) must not exceed config.maxLength (${maxLength}).`,
+      path: "config",
+    });
+  }
+
+  return errors;
+}
+
 function runSemanticChecks(pack: Pack): ValidationError[] {
+  if (pack.strategy === "markov") return checkMarkovConfig(pack);
+
   if (pack.strategy !== "template" || !pack.config) return [];
 
-  const { slots, formats, derivations = [] } = pack.config;
+  const { slots, formats, derivations = [] } = pack.config as TemplateConfig;
 
   return [
     ...checkLexiconRefs(pack, slots),

@@ -1,3 +1,4 @@
+import { generateWithMarkov, MARKOV_STRATEGY_ID } from "./markov/index.js";
 import {
   generateWithTemplate,
   TEMPLATE_STRATEGY_ID,
@@ -25,8 +26,11 @@ export type StrategyResult = GenerateWithTemplateResult;
 
 export type StrategyImplementation = (input: StrategyInput) => StrategyResult;
 
+const RESERVED_STRATEGY_IDS = new Set([TEMPLATE_STRATEGY_ID, MARKOV_STRATEGY_ID]);
+
 const strategies = new Map<string, StrategyImplementation>([
   [TEMPLATE_STRATEGY_ID, generateWithTemplate],
+  [MARKOV_STRATEGY_ID, generateWithMarkov],
 ]);
 
 /** Looks up a registered strategy by id (a pack's `strategy` field), or `undefined` if none is registered. */
@@ -37,13 +41,14 @@ export function getStrategy(id: string): StrategyImplementation | undefined {
 /**
  * Registers a custom strategy implementation under `id`, so packs with `"strategy": id` can
  * generate through it. Throws rather than silently overriding on either a reserved id
- * (`"template"`) or a re-registration of an id that's already taken — same "reject and warn,
- * never silently override" principle this project already applies to duplicate pack/lexicon
- * ids (step 03) and (per its own open question) user-pack id collisions (step 17).
+ * (`"template"`, `"markov"`) or a re-registration of an id that's already taken — same
+ * "reject and warn, never silently override" principle this project already applies to
+ * duplicate pack/lexicon ids (step 03) and (per its own open question) user-pack id
+ * collisions (step 17).
  */
 export function registerStrategy(id: string, implementation: StrategyImplementation): void {
-  if (id === TEMPLATE_STRATEGY_ID) {
-    throw new Error(`registerStrategy: "${id}" is reserved for the built-in template strategy`);
+  if (RESERVED_STRATEGY_IDS.has(id)) {
+    throw new Error(`registerStrategy: "${id}" is reserved for a built-in strategy`);
   }
   if (strategies.has(id)) {
     throw new Error(`registerStrategy: a strategy is already registered under id "${id}"`);
@@ -51,8 +56,9 @@ export function registerStrategy(id: string, implementation: StrategyImplementat
   strategies.set(id, implementation);
 }
 
-/** Test-only escape hatch: drops every custom registration, leaving only the built-in "template". */
+/** Test-only escape hatch: drops every custom registration, leaving only the built-ins ("template", "markov"). */
 export function resetStrategyRegistry(): void {
   strategies.clear();
   strategies.set(TEMPLATE_STRATEGY_ID, generateWithTemplate);
+  strategies.set(MARKOV_STRATEGY_ID, generateWithMarkov);
 }
