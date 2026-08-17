@@ -25,6 +25,9 @@
       "KinMemberLabel": "Member {number} variant",
       "KinGenerate": "Generate Family"
     },
+    "ChatCommand": {
+      "Usage": "Onomasticon: usage is /name <packId> [variant] [gm]"
+    },
     "Settings": {
       "UserPackPath": {
         "Name": "User Pack Directory",

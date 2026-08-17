@@ -194,6 +194,42 @@ export function resetJournalStub(): void {
   pageIdCounter = 0;
 }
 
+interface ChatMessageCreateDataStub {
+  content: string;
+  speaker?: unknown;
+  whisper?: string[];
+}
+
+const createdChatMessages: ChatMessageCreateDataStub[] = [];
+
+/**
+ * Real (not mocked) `ChatMessage` stand-in — records every `create()` call so
+ * src/module/chatCommand.ts's tests can assert on posted content/whisper targets without a
+ * live Foundry world. `getWhisperRecipients` returns a fixed fake GM user, same "just enough
+ * to exercise the call site" scope as the other stubs in this file.
+ */
+const ChatMessageStub = {
+  create: async (data: ChatMessageCreateDataStub): Promise<ChatMessageCreateDataStub> => {
+    createdChatMessages.push(data);
+    return data;
+  },
+  getSpeaker: (): { alias: string } => ({ alias: "Test Speaker" }),
+  getWhisperRecipients: (_name: string): Array<{ id: string }> => [{ id: "gm-user-1" }],
+};
+
+/** Test-only accessor: every `ChatMessage.create` call recorded so far, in call order. */
+export function getCreatedChatMessagesStub(): ChatMessageCreateDataStub[] {
+  return createdChatMessages;
+}
+
+/** Test-only escape hatch: clears every recorded `ChatMessage.create` call. */
+export function resetChatMessageStub(): void {
+  createdChatMessages.length = 0;
+}
+
+// @ts-expect-error - fvtt-types declares `ChatMessage` as an ambient `const`, not a globalThis property.
+globalThis.ChatMessage = ChatMessageStub;
+
 // @ts-expect-error - fvtt-types declares `JournalEntry` as an ambient `const`, not a globalThis property.
 globalThis.JournalEntry = JournalEntryStub;
 

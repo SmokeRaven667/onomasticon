@@ -1,4 +1,5 @@
 import { registerApi } from "./module/api.js";
+import { registerChatCommand } from "./module/chatCommand.js";
 import { registerInitHook } from "./module/init.js";
 import { registerLaunchPoint } from "./module/launchPoint.js";
 import { registerSettings } from "./module/settings.js";
@@ -9,3 +10,4 @@ registerInitHook();
 registerLaunchPoint();
 registerApi();
 registerSettings();
+registerChatCommand();
