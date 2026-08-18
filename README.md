@@ -2,7 +2,7 @@
 
 A [Foundry VTT](https://foundryvtt.com/) module for generating character and NPC names — fantasy, sci-fi, modern, or anything else expressed as a data pack, including kin groups with real naming conventions (patronymics, clan names, "of House X" constructions) instead of a list of unrelated strings.
 
-> **Status: pre-alpha, in design.** The pack/lexicon schema is defined and validated; the generation engine and Foundry UI don't exist yet. See [`00-mission-control.md`](00-mission-control.md) for the build plan.
+> **Status: v0.4, feature-complete against the current build plan.** The pack/lexicon schema, generation engine, and Foundry UI (generator dialog, actor/journal/RollTable/chat integrations, pack authoring form) are all in place. See [`00-mission-control.md`](00-mission-control.md) for the build plan and what's been verified where.
 
 ## Why this exists
 
@@ -10,6 +10,51 @@ Name generators are easy to prototype and hard to extend, because the first work
 
 1. **Genre is data, not code.** A "genre" is a JSON pack, not a branch in a switch statement. Adding Norse, cyberpunk-street, or 1920s-Chicago names is a content task — write a JSON file — not a code change.
 2. **Kin groups are a first-class concept, not a bolt-on.** Siblings share a surname. Patronymics derive from a parent's given name. Clan prefixes derive from a parent's family name. These need structured results and a notion of "generate this name in the context of that other name," so the engine is built around that from the start rather than retrofitted later.
+
+## Using it in Foundry
+
+### Installing the module
+
+Onomasticon isn't published to Foundry's package browser yet, and its manifest points at files (`dist/onomasticon.js`, `data-manifest.json`) that are build output, not checked into the repo — so installing by pasting the manifest URL into Foundry's "Install Module" dialog won't work yet. For now, build it locally and drop it into your Foundry install:
+
+```sh
+git clone https://github.com/SmokeRaven667/onomasticon.git
+cd onomasticon
+npm install
+npm run build          # also regenerates data-manifest.json
+```
+
+Then copy (or symlink) the whole `onomasticon` folder into your Foundry `Data/modules/` directory, so you end up with `Data/modules/onomasticon/module.json` at that path. Restart Foundry (or reload the setup page) so it picks up the new module.
+
+### Enabling it in a world
+
+In a world, go to **Game Settings → Manage Modules**, check **Onomasticon**, and save. Two new buttons appear in the header of the **Journal** sidebar tab:
+
+- **Onomasticon** — opens the name generator dialog (pick a pack, generate one name, a kin group, or a full roster; apply a result to the selected token's actor; send a batch to a journal page; export a pack's lexicons as RollTables).
+- **Onomasticon: Author Pack** — opens the pack authoring form (see below).
+
+Everything is also reachable from a macro via `game.modules.get("onomasticon").api` — `generate`, `generateKin`, `generateRoster`, `listPacks`, `openGenerator`, `openPackAuthor`, and the rest of the public surface.
+
+### Creating or updating a pack
+
+A "pack" is Onomasticon's own term for what you might think of as a name-list/language pack: a genre (elven, corporate-spacer, 1920s-Chicago, whatever) expressed as slots, formats, and the lexicons (word lists) those slots draw from. See [Genre packs](#genre-packs) below for the full JSON shape — this section is about getting one into your world.
+
+**First, set a User Pack Directory.** Packs you create live in a folder you choose, separate from the bundled ones, so updating the module never clobbers your content. Go to **Game Settings → Configure Settings → Onomasticon → User Pack Directory** and enter a path relative to Foundry's `Data` folder (e.g. `onomasticon-packs`) — it'll be created on first save if it doesn't exist. Leave it empty and pack creation/saving has nowhere safe to write to.
+
+**Then build a pack, two ways:**
+
+1. **The authoring form (recommended, no JSON required).** Open it from the Journal sidebar's "Onomasticon: Author Pack" button. Fill in an id (e.g. `homebrew.my-village`), a label, and one or more **slots** — each is either:
+   - a **lexicon** slot: pick an existing lexicon from the dropdown (bundled, or one already in your user directory) that supplies the word list, plus optional variant keys (`masc, fem, neutral`) and a share key if this should stay consistent across a kin group;
+   - a **procedural** slot: a token pattern like `{L}{L}-{D}{D}{D}` for generated codes/serials, not a word list;
+   - a **derived** slot: computed from a parent's name (patronymics, clan prefixes) — the form doesn't build these yet, see below.
+
+   Add one or more **formats** — the template pattern(s) slots get combined into, e.g. `{given} {family}`. The Validation panel updates live against the same rules the loader itself enforces, and **Save** is disabled until the pack is valid. Saving uploads `<id>.json` into your configured User Pack Directory and it's generatable immediately — no reload needed.
+
+   This v1 form covers slots and formats only. If your pack needs a `derived` slot (a patronymic, a clan-name-from-parent), type the `derivations` array as raw JSON into the "Derivations" box at the bottom — same shape as the `config.derivations` field in a hand-written pack file (see [Kin groups and derivation rules](#kin-groups-and-derivation-rules)).
+
+2. **By hand.** Write a pack JSON file (matching [`schema/pack.schema.json`](schema/pack.schema.json)) and, if it needs new words rather than reusing an existing lexicon, a lexicon JSON file (matching [`schema/lexicon.schema.json`](schema/lexicon.schema.json)) referencing it. Drop both into your configured User Pack Directory. A bad or invalid file is skipped with a warning (both in the console and as a UI notification) rather than breaking every other pack — so a typo in one file never takes down the generator.
+
+**Updating an existing pack** means editing (or re-saving) the same `<id>.json` file. The authoring form doesn't currently support loading an existing pack back into the form to edit — it only builds new ones — so for now, revising a pack means either hand-editing its JSON file directly, or rebuilding it from scratch in the form and saving under the same id. Either way: a hand-edited file needs a Foundry reload (F5) before the change is picked up, since the directory is only scanned once per session and cached; a re-save through the form's Save button busts that cache automatically, so it takes effect on the very next time you open the generator or authoring dialog.
 
 ## Architecture
 
@@ -124,8 +169,8 @@ The full step-by-step plan — what's done, what's next, and the reasoning behin
 
 ## Contributing a pack
 
-Because genre is data, adding support for a new setting or culture doesn't require touching the engine at all: write a lexicon, write a pack that references it, and validate both against the schemas in `schema/`. (A loader with proper semantic validation — catching things a JSON Schema can't, like a dangling slot reference — is planned; see [`codesteps/03-loader-and-validator.md`](codesteps/03-loader-and-validator.md).)
+Because genre is data, adding support for a new setting or culture doesn't require touching the engine at all: write a lexicon, write a pack that references it, and validate both against the schemas in `schema/`. The loader's semantic validator (catching things a JSON Schema can't, like a dangling slot reference) runs on every pack — bundled or not — so a pack you contribute is held to the exact same standard as the ones already in `packs/`; see [`codesteps/03-loader-and-validator.md`](codesteps/03-loader-and-validator.md) for how it works. If you'd rather add a pack to your own world without opening a PR, see [Creating or updating a pack](#creating-or-updating-a-pack) above.
 
 ## License
 
-Not yet chosen — tracked in [`codesteps/02-project-tooling.md`](codesteps/02-project-tooling.md).
+[MIT](LICENSE).
