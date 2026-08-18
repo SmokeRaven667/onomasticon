@@ -4,3 +4,5 @@ data-manifest.json
 *.log
 .DS_Store
 .vscode/
+release-staging/
+module.zip
