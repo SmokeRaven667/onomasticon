@@ -15,7 +15,15 @@ Name generators are easy to prototype and hard to extend, because the first work
 
 ### Installing the module
 
-Onomasticon isn't published to Foundry's package browser yet, and its manifest points at files (`dist/onomasticon.js`, `data-manifest.json`) that are build output, not checked into the repo — so installing by pasting the manifest URL into Foundry's "Install Module" dialog won't work yet. For now, build it locally and drop it into your Foundry install:
+Onomasticon isn't listed in Foundry's in-app package browser yet, but it's installable without cloning or building anything: open Foundry's **Install Module** dialog and paste this manifest URL —
+
+```
+https://github.com/SmokeRaven667/onomasticon/releases/latest/download/module.json
+```
+
+— and click Install. That always resolves to the latest tagged release; Foundry's own "check for updates" continues to track it afterward. Every push to a `vX.Y.Z` tag runs a [release workflow](.github/workflows/release.yml) that builds the module and publishes it as a [GitHub Release](https://github.com/SmokeRaven667/onomasticon/releases) with a matching `module.json`/`module.zip`, so this URL is always current.
+
+If you're working on Onomasticon itself rather than just using it, build from source instead:
 
 ```sh
 git clone https://github.com/SmokeRaven667/onomasticon.git
