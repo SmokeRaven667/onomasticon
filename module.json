@@ -2,7 +2,7 @@
   "id": "onomasticon",
   "title": "Onomasticon",
   "description": "Generate character, NPC, and kin-group names across fantasy, sci-fi, modern, and custom genre packs.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "compatibility": {
     "minimum": "13",
     "verified": "14"
