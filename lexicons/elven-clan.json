@@ -2,5 +2,12 @@
   "schemaVersion": 1,
   "id": "elven-clan",
   "tags": ["fantasy", "elven"],
-  "entries": [{ "value": "Morgane" }, { "value": "Ashwood" }, { "value": "Fenmarrow" }]
+  "entries": [
+    { "value": "Morgane" },
+    { "value": "Ashwood" },
+    { "value": "Fenmarrow" },
+    { "value": "Wintermoor" },
+    { "value": "Hallowmere" },
+    { "value": "Brightwater" }
+  ]
 }
