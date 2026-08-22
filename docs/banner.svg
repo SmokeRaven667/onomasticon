@@ -1,0 +1,41 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Onomasticon — a book of names for Foundry VTT">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f130d" />
+      <stop offset="55%" stop-color="#3a2415" />
+      <stop offset="100%" stop-color="#4a2c1a" />
+    </linearGradient>
+    <linearGradient id="pageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f4e9cf" />
+      <stop offset="100%" stop-color="#e6d3a8" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="300" fill="url(#bgGrad)" />
+  <rect x="16" y="16" width="1168" height="268" fill="none" stroke="#c9a227" stroke-width="2" rx="8" />
+  <rect x="26" y="26" width="1148" height="248" fill="none" stroke="#c9a227" stroke-width="1" opacity="0.5" rx="5" />
+
+  <g>
+    <line x1="118" y1="96" x2="118" y2="208" stroke="#c9a227" stroke-width="3" />
+    <polygon points="118,96 58,110 58,196 118,208" fill="url(#pageGrad)" stroke="#3a2415" stroke-width="2" />
+    <polygon points="118,96 178,110 178,196 118,208" fill="url(#pageGrad)" stroke="#3a2415" stroke-width="2" />
+    <line x1="130" y1="128" x2="162" y2="124" stroke="#8a6b3f" stroke-width="2" />
+    <line x1="130" y1="144" x2="166" y2="140" stroke="#8a6b3f" stroke-width="2" />
+    <line x1="130" y1="160" x2="160" y2="157" stroke="#8a6b3f" stroke-width="2" />
+    <line x1="130" y1="176" x2="164" y2="173" stroke="#8a6b3f" stroke-width="2" />
+    <path d="M158,96 Q176,70 202,44 Q198,84 172,112 Q162,124 148,116 Z" fill="#c9a227" stroke="#3a2415" stroke-width="2" />
+    <line x1="148" y1="116" x2="112" y2="152" stroke="#3a2415" stroke-width="2" />
+    <circle cx="109" cy="155" r="3.5" fill="#3a2415" />
+  </g>
+
+  <text x="252" y="152" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="700" letter-spacing="4" fill="#f4e9cf">ONOMASTICON</text>
+  <rect x="254" y="172" width="460" height="3" fill="#c9a227" />
+  <text x="254" y="205" font-family="Georgia, 'Times New Roman', serif" font-size="21" letter-spacing="5" fill="#c9a227" font-style="italic">A BOOK OF NAMES FOR FOUNDRY VTT</text>
+  <text x="254" y="234" font-family="Georgia, 'Times New Roman', serif" font-size="15" letter-spacing="2" fill="#e6d3a8" opacity="0.8">fantasy · sci-fi · modern · homebrew</text>
+
+  <g>
+    <circle cx="1080" cy="150" r="58" fill="#6e2a2a" stroke="#c9a227" stroke-width="3" />
+    <circle cx="1080" cy="150" r="46" fill="none" stroke="#c9a227" stroke-width="1" opacity="0.6" />
+    <text x="1080" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#f4e9cf" text-anchor="middle">O</text>
+  </g>
+</svg>
