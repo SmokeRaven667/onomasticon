@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "western-name-opener",
+  "tags": ["western"],
+  "entries": [
+    { "value": "Cal" },
+    { "value": "Sil" },
+    { "value": "Han" },
+    { "value": "Mor" },
+    { "value": "Del" },
+    { "value": "Gar" },
+    { "value": "Ros" },
+    { "value": "Tam" }
+  ]
+}

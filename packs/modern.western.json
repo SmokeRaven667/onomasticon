@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "modern.western",
+  "label": "Modern — Western",
+  "description": "Western frontier names that mix plain lexicon-based names with a curated frontier nickname about half the time. About one name in five belongs to a drifter whose real given name was never recorded.",
+  "tags": ["western"],
+  "strategy": "template",
+  "lexiconRefs": {
+    "given": "western-given",
+    "family": "western-family",
+    "moniker": "western-moniker",
+    "opener": "western-name-opener",
+    "closer": "western-name-closer"
+  },
+  "config": {
+    "slots": {
+      "given": {
+        "kind": "lexicon",
+        "lexicon": "given",
+        "variants": ["masc", "fem", "neutral"]
+      },
+      "givenOpener": { "kind": "lexicon", "lexicon": "opener", "optional": true },
+      "givenCloser": { "kind": "lexicon", "lexicon": "closer", "optional": true },
+      "family": {
+        "kind": "lexicon",
+        "lexicon": "family",
+        "shareWithin": "kin"
+      },
+      "moniker": { "kind": "lexicon", "lexicon": "moniker", "optional": true }
+    },
+    "formats": [
+      { "weight": 4, "pattern": "{given} {family}" },
+      {
+        "weight": 4,
+        "pattern": "{given} \"{moniker}\" {family}",
+        "requires": ["moniker"]
+      },
+      {
+        "weight": 1,
+        "pattern": "{givenOpener}{givenCloser} {family}",
+        "requires": ["givenOpener", "givenCloser"]
+      },
+      {
+        "weight": 1,
+        "pattern": "{givenOpener}{givenCloser} \"{moniker}\" {family}",
+        "requires": ["givenOpener", "givenCloser", "moniker"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "western-moniker",
+  "tags": ["western"],
+  "entries": [
+    { "value": "Doc" },
+    { "value": "Reb" },
+    { "value": "Preacher" },
+    { "value": "Ace" },
+    { "value": "Deuce" },
+    { "value": "Whiskey" },
+    { "value": "Snake" },
+    { "value": "Cactus" },
+    { "value": "Rattler" },
+    { "value": "Boots" },
+    { "value": "Gunner" },
+    { "value": "Ranger" },
+    { "value": "Sundance" },
+    { "value": "Shotgun" },
+    { "value": "Bronco" },
+    { "value": "Coyote" },
+    { "value": "Grizzly" },
+    { "value": "Buckshot" },
+    { "value": "Trigger" },
+    { "value": "Maverick" },
+    { "value": "Rusty" },
+    { "value": "Scout" },
+    { "value": "Drifter" },
+    { "value": "Lonestar" }
+  ]
+}

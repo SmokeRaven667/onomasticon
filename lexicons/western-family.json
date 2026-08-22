@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "western-family",
+  "tags": ["western"],
+  "entries": [
+    { "value": "Carson" },
+    { "value": "Walker" },
+    { "value": "Hayes" },
+    { "value": "McCoy" },
+    { "value": "Hollis" },
+    { "value": "Mercer" },
+    { "value": "Dalton" },
+    { "value": "Shaw" },
+    { "value": "Wilder" },
+    { "value": "Tate" },
+    { "value": "Keene" },
+    { "value": "Briggs" },
+    { "value": "Parker" },
+    { "value": "Sutton" },
+    { "value": "Laramie" },
+    { "value": "Ridge" },
+    { "value": "Bennett" },
+    { "value": "Hollister" },
+    { "value": "Granger" },
+    { "value": "Pierce" },
+    { "value": "Ransom" },
+    { "value": "Garrison" }
+  ]
+}
