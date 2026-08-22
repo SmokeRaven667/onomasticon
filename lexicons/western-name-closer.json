@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "western-name-closer",
+  "tags": ["western"],
+  "entries": [
+    { "value": "ander" },
+    { "value": "eron" },
+    { "value": "iah" },
+    { "value": "us" },
+    { "value": "ard" },
+    { "value": "ric" },
+    { "value": "mund" },
+    { "value": "ton" }
+  ]
+}

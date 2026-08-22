@@ -11,6 +11,7 @@
   "scripts": {
     "build": "npm run generate:manifest && node esbuild.config.mjs",
     "generate:manifest": "node scripts/generateManifest.mjs",
+    "deploy:local": "npm run build && node scripts/deployLocal.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
