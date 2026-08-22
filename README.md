@@ -131,6 +131,36 @@ A few things worth calling out:
 - **`requires`** on a format means it's only used once every listed slot actually resolved. This is how a pack expresses "only use the clan-suffixed format if a clan was rolled" without the engine needing genre-specific logic.
 - **Lexicons are separate files**, referenced by id, so a word list (`elven-given.json`, `spacer-family.json`, ...) can be shared across packs and loaded lazily rather than all at once at startup.
 
+### Synthesizing invented names with opener/closer slots
+
+Not every given name has to come whole out of a lexicon. [`packs/modern.western.json`](packs/modern.western.json) shows a pattern for building one from parts instead: two small `lexicon` slots — a name-opener fragment and a name-closer fragment — sampled independently and concatenated with no separator in the format pattern:
+
+```json
+"lexiconRefs": {
+  "opener": "western-name-opener",
+  "closer": "western-name-closer"
+},
+"config": {
+  "slots": {
+    "givenOpener": { "kind": "lexicon", "lexicon": "opener", "optional": true },
+    "givenCloser": { "kind": "lexicon", "lexicon": "closer", "optional": true }
+  },
+  "formats": [
+    {
+      "weight": 1,
+      "pattern": "{givenOpener}{givenCloser} {family}",
+      "requires": ["givenOpener", "givenCloser"]
+    }
+  ]
+}
+```
+
+[`western-name-opener.json`](lexicons/western-name-opener.json) holds short syllable fragments (`Cal`, `Sil`, `Han`, ...) and [`western-name-closer.json`](lexicons/western-name-closer.json) holds endings (`ander`, `eron`, `iah`, ...); combined they produce names like `Calander` or `Silander` that never appear literally in either lexicon.
+
+There's nothing opener/closer-specific in the engine — a `kind: "lexicon"` slot always just resolves to one weighted-random entry from its lexicon, the same as `given` or `family`. The effect comes entirely from naming two slots so their tokens sit adjacent with no space (`{givenOpener}{givenCloser}`) instead of separated the way `{given} {family}` is. The same trick works with any number of fragment slots, not just two, and under any names you like — it's a general technique for stretching a small lexicon into a much larger space of invented names, worth reaching for whenever a culture's names follow a handful of recurring syllables rather than being drawn whole from a fixed list.
+
+Marking the fragment slots `optional: true` and gating the format with `requires` (as `modern.western.json` does) lets a pack mix this synthesized form in at low weight alongside its normal formats, rather than routing every generated name through it.
+
 ### Kin groups and derivation rules
 
 Some naming conventions aren't a random pick — they're computed from a relative's name. A Slavic patronymic, an Icelandic `-son`/`-dóttir`, a `Mac-`/`O'-`/`ibn-` clan prefix: all of these take a parent's part and transform it. A pack expresses this with a `derived` slot plus a `derivations` rule:
