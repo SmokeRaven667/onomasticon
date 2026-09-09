@@ -1,5 +1,7 @@
 ![Onomastican - book of names for Foundry VTT](logo-onomasticon.webp)
 
+# Onomasticon
+
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/SmokeRaven667/onomasticon?color=c9a227"></a>
   <a href="https://github.com/SmokeRaven667/onomasticon/actions/workflows/ci.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/SmokeRaven667/onomasticon/ci.yml?branch=main&label=tests&color=6e2a2a"></a>
