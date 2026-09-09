@@ -1,4 +1,4 @@
-![Onomastican - book of names for Foundry VTT](logo-onomasticon.webp)
+![Onomasticon - book of names for Foundry VTT](logo-onomasticon.webp)
 
 # Onomasticon
 
